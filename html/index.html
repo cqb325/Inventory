@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1, maximum-scale=1, user-scalable=no">
+    <title>CLY库存管理</title>
+
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../assets/css/base.min.css"/>
+    <link rel="stylesheet" href="../assets/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="../assets/theme/default/theme.min.css"/>
+
+    <link rel="stylesheet" href="../assets/css/main.min.css"/>
+
+    <!--[if lt IE 9]>
+    <script src="../assets/lib/html5shiv.js"></script>
+    <script src="../assets/lib/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+
+    <div id="desktop">
+
+    </div>
+
+    <!--[if lt IE 9]>
+    <script src="../assets/lib/es5-shim.min.js"></script>
+    <script src="../assets/lib/es5-sham.min.js"></script>
+    <![endif]-->
+
+    <!--[if lt IE 10]>
+    <script>
+        Object.getPrototypeOf = function getPrototypeOf(object) {
+            return object.__proto__;
+        };
+    </script>
+    <![endif]-->
+
+    <script>
+        if (window.ActiveXObject) {
+            var reg = /10\.0/;
+            var str = navigator.userAgent;
+            if (reg.test(str)) {
+                Object.getPrototypeOf = function getPrototypeOf(object) {
+                    return object.__proto__;
+                };
+            }
+        }
+
+    </script>
+
+    <script>
+        require("./app");
+    </script>
+</body>
+</html>

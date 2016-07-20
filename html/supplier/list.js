@@ -8,15 +8,17 @@ const Component = React.Component;
 const Label = require('../lib/Label');
 const Button = require('../lib/Button');
 const Tile = require('../Tile');
+const Table = require('../lib/Table');
 
 let List = React.createClass({
     displayName: 'List',
 
 
     render() {
+        let header = [{ name: "name", text: "名称" }];
         return React.createElement(
             'div',
-            { className: 'container' },
+            { className: 'main-container' },
             React.createElement(
                 Label,
                 { className: 'searchTools mt-30 mb-20', component: 'div' },
@@ -26,7 +28,11 @@ let List = React.createClass({
                     '新增供应商'
                 )
             ),
-            React.createElement(Tile, { header: '供应商列表' })
+            React.createElement(
+                Tile,
+                { header: '供应商列表' },
+                React.createElement(Table, { header: header, data: [] })
+            )
         );
     }
 });

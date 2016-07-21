@@ -14,7 +14,7 @@ class Tile extends Component {
             ),
             React.createElement(
                 "div",
-                { className: "tile-content" },
+                { className: "tile-content", style: this.props.contentStyle },
                 this.props.children
             )
         );

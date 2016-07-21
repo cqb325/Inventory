@@ -1,4 +1,4 @@
-export function substitute(str, obj) {
+module.exports.substitute = function(str, obj) {
     if (typeof str === 'string') {
         return str.replace((/\\?\{([^{}]+)\}/g), function(match, name){
             if (match.charAt(0) === '\\') {
@@ -9,4 +9,4 @@ export function substitute(str, obj) {
     } else if (typeof str === 'function') {
         return str(obj);
     }
-}
+};

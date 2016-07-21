@@ -3,6 +3,7 @@ const ReactDOM = require('react-dom');
 const Component = React.Component;
 
 const SupplierList = require('./supplier/list');
+const SupplierAdd = require('./supplier/add');
 
 const ReactRouter = require('react-router');
 const Router = ReactRouter.Router;
@@ -11,6 +12,9 @@ const Route = ReactRouter.Route;
 const IndexRoute = ReactRouter.IndexRoute;
 const Link = ReactRouter.Link;
 const IndexLink = ReactRouter.Link;
+
+const database = require("./db/db");
+Object.assign(global, database);
 
 const APP = {
     sysName: "CLY",
@@ -64,6 +68,7 @@ ReactDOM.render(React.createElement(
         Route,
         { path: '/', component: App },
         React.createElement(IndexRoute, { component: Dashboard }),
-        routers
+        routers,
+        React.createElement(Route, { path: 'provider_add', component: SupplierAdd })
     )
 ), document.querySelector("#desktop"));

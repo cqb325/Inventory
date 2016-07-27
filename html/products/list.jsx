@@ -14,7 +14,7 @@ const Input = require('../lib/Input');
 const FormControl = require('../lib/FormControl');
 const MessageBox = require('../lib/MessageBox');
 
-const ProviderService = require("../services/ProviderService");
+const ProductService = require("../services/ProductService");
 
 let List = React.createClass({
 
@@ -28,10 +28,11 @@ let List = React.createClass({
         let params = Object.assign({},{
             pageNum: pageNum,
             pageSize: pageSize,
-            prov_name: this.refs.prov_name.getValue()
+            prod_name: this.refs.prod_name.getValue(),
+            prov_id: this.props.params.id
         });
 
-        ProviderService.getPageList(params, (ret)=>{
+        ProductService.getPageList(params, (ret)=>{
             this.refs.table.setData(ret.data);
             this.refs.pagination.update({
                 current: ret.pageNum,
@@ -49,14 +50,14 @@ let List = React.createClass({
     },
 
     showConfirm(id){
-        this.refs.confirm.show("确认删除该供应商？");
+        this.refs.confirm.show("确认删除该产品？");
         this.refs.confirm.setData(id);
     },
 
     confirmDelete(flag){
         if(flag) {
             var id = this.refs.confirm.getData();
-            ProviderService.deleteById(id, (ret)=>{
+            ProductService.deleteById(id, (ret)=>{
                 if(ret){
                     this.refs.tip.show("删除成功");
                     this.refs.tip.setData(true);
@@ -65,7 +66,6 @@ let List = React.createClass({
                     this.refs.tip.setData(false);
                 }
             });
-
             return true;
         }
     },
@@ -84,18 +84,17 @@ let List = React.createClass({
         let scope = this;
         let btnFormat = function(value, column, row){
             return (<span>
-                <Button icon="edit" flat={true} href={"#provider_edit/"+row.prov_id}>编辑</Button>
-                <Button icon="trash" flat={true} onClick={scope.showConfirm.bind(scope, row.prov_id)}>删除</Button>
-                <Button icon="list" flat={true} href={"#product_list/"+row.prov_id}>产品</Button>
+                <Button icon="edit" flat={true} href={"#product_edit/"+row.prod_id}>编辑</Button>
+                <Button icon="trash" flat={true} onClick={scope.showConfirm.bind(scope, row.prod_id)}>删除</Button>
             </span>);
         };
         let header = [
-            {name: "prov_name", text: "名称"},
-            {name: "prov_type", text: "产品类型"},
-            {name: "prov_contactName", text: "联系人"},
-            {name: "prov_phone", text: "联系电话"},
-            {name: "prov_ctime", text: "创建时间", format: "DateTimeFormat"},
-            {name: "prov_address", text: "地址"},
+            {name: "prod_name", text: "名称"},
+            {name: "prod_price", text: "单价"},
+            {name: "prod_brand", text: "品牌"},
+            {name: "prod_type", text: "类型"},
+            {name: "prod_model", text: "型号"},
+            {name: "prod_specifications", text: "规格"},
             {name: "ops", text: "操作", format: btnFormat}
         ];
         return (
@@ -104,16 +103,17 @@ let List = React.createClass({
                 <MessageBox title="提示" ref="tip" confirm={this.confirmDRefresh}/>
                 <Label className="searchTools mt-30 mb-20" component="div">
                     <Label className="" grid={0.3}>
-                        <Button icon="plus" theme="success" href="#provider_add">新增供应商</Button>
+                        <Button icon="plus" theme="success" href={"#product_add/"+this.props.params.id }>新增产品</Button>
                     </Label>
 
                     <Label className="text-right" grid={0.7}>
-                        <FormControl ref="prov_name" label="供应商名称: " type="text"></FormControl>
+                        <FormControl ref="prod_name" label="产品名称: " type="text"></FormControl>
                         <Button icon="search" theme="success" raised={true} className="ml-10" onClick={this.search}>查 询</Button>
+                        <Button className="ml-20" icon="mail-reply" theme="info" raised={true} href="javascript:history.go(-1)">返 回</Button>
                     </Label>
                 </Label>
 
-                <Tile header="供应商列表" contentStyle={{padding: "0px"}}>
+                <Tile header="产品列表" contentStyle={{padding: "0px"}}>
                     <div style={{overflow: 'hidden'}}>
                         <Table ref="table" header={header} data={[]} striped={true} className="text-center"/>
                         <Pagination ref="pagination"

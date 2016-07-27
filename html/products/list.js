@@ -14,7 +14,7 @@ const Input = require('../lib/Input');
 const FormControl = require('../lib/FormControl');
 const MessageBox = require('../lib/MessageBox');
 
-const ProviderService = require("../services/ProviderService");
+const ProductService = require("../services/ProductService");
 
 let List = React.createClass({
     displayName: 'List',
@@ -30,10 +30,11 @@ let List = React.createClass({
         let params = Object.assign({}, {
             pageNum: pageNum,
             pageSize: pageSize,
-            prov_name: this.refs.prov_name.getValue()
+            prod_name: this.refs.prod_name.getValue(),
+            prov_id: this.props.params.id
         });
 
-        ProviderService.getPageList(params, ret => {
+        ProductService.getPageList(params, ret => {
             this.refs.table.setData(ret.data);
             this.refs.pagination.update({
                 current: ret.pageNum,
@@ -51,14 +52,14 @@ let List = React.createClass({
     },
 
     showConfirm(id) {
-        this.refs.confirm.show("确认删除该供应商？");
+        this.refs.confirm.show("确认删除该产品？");
         this.refs.confirm.setData(id);
     },
 
     confirmDelete(flag) {
         if (flag) {
             var id = this.refs.confirm.getData();
-            ProviderService.deleteById(id, ret => {
+            ProductService.deleteById(id, ret => {
                 if (ret) {
                     this.refs.tip.show("删除成功");
                     this.refs.tip.setData(true);
@@ -67,7 +68,6 @@ let List = React.createClass({
                     this.refs.tip.setData(false);
                 }
             });
-
             return true;
         }
     },
@@ -90,22 +90,17 @@ let List = React.createClass({
                 null,
                 React.createElement(
                     Button,
-                    { icon: 'edit', flat: true, href: "#provider_edit/" + row.prov_id },
+                    { icon: 'edit', flat: true, href: "#product_edit/" + row.prod_id },
                     '编辑'
                 ),
                 React.createElement(
                     Button,
-                    { icon: 'trash', flat: true, onClick: scope.showConfirm.bind(scope, row.prov_id) },
+                    { icon: 'trash', flat: true, onClick: scope.showConfirm.bind(scope, row.prod_id) },
                     '删除'
-                ),
-                React.createElement(
-                    Button,
-                    { icon: 'list', flat: true, href: "#product_list/" + row.prov_id },
-                    '产品'
                 )
             );
         };
-        let header = [{ name: "prov_name", text: "名称" }, { name: "prov_type", text: "产品类型" }, { name: "prov_contactName", text: "联系人" }, { name: "prov_phone", text: "联系电话" }, { name: "prov_ctime", text: "创建时间", format: "DateTimeFormat" }, { name: "prov_address", text: "地址" }, { name: "ops", text: "操作", format: btnFormat }];
+        let header = [{ name: "prod_name", text: "名称" }, { name: "prod_price", text: "单价" }, { name: "prod_brand", text: "品牌" }, { name: "prod_type", text: "类型" }, { name: "prod_model", text: "型号" }, { name: "prod_specifications", text: "规格" }, { name: "ops", text: "操作", format: btnFormat }];
         return React.createElement(
             'div',
             { className: 'main-container' },
@@ -119,24 +114,29 @@ let List = React.createClass({
                     { className: '', grid: 0.3 },
                     React.createElement(
                         Button,
-                        { icon: 'plus', theme: 'success', href: '#provider_add' },
-                        '新增供应商'
+                        { icon: 'plus', theme: 'success', href: "#product_add/" + this.props.params.id },
+                        '新增产品'
                     )
                 ),
                 React.createElement(
                     Label,
                     { className: 'text-right', grid: 0.7 },
-                    React.createElement(FormControl, { ref: 'prov_name', label: '供应商名称: ', type: 'text' }),
+                    React.createElement(FormControl, { ref: 'prod_name', label: '产品名称: ', type: 'text' }),
                     React.createElement(
                         Button,
                         { icon: 'search', theme: 'success', raised: true, className: 'ml-10', onClick: this.search },
                         '查 询'
+                    ),
+                    React.createElement(
+                        Button,
+                        { className: 'ml-20', icon: 'mail-reply', theme: 'info', raised: true, href: 'javascript:history.go(-1)' },
+                        '返 回'
                     )
                 )
             ),
             React.createElement(
                 Tile,
-                { header: '供应商列表', contentStyle: { padding: "0px" } },
+                { header: '产品列表', contentStyle: { padding: "0px" } },
                 React.createElement(
                     'div',
                     { style: { overflow: 'hidden' } },

@@ -1,4 +1,4 @@
-export function on (el, type, callback) {
+module.exports.on = function(el, type, callback) {
     if(el.addEventListener) {
         el.addEventListener(type, callback);
     } else {
@@ -6,17 +6,17 @@ export function on (el, type, callback) {
             callback.call(el);
         });
     }
-}
+};
 
-export function off (el, type, callback) {
+module.exports.off = function (el, type, callback) {
     if(el.removeEventListener) {
         el.removeEventListener(type, callback);
     } else {
         el.detachEvent('on' + type, callback);
     }
-}
+};
 
-export function once (el, type, callback) {
+module.exports.once = function (el, type, callback) {
     let typeArray = type.split(' ');
     let recursiveFunction = function(e){
         e.target.removeEventListener(e.type, recursiveFunction);
@@ -26,4 +26,4 @@ export function once (el, type, callback) {
     for (let i = typeArray.length - 1; i >= 0; i--) {
         on(el, typeArray[i], recursiveFunction);
     }
-}
+};

@@ -42,8 +42,39 @@ module.exports = {
      */
     save(params, callback){
         params.prov_id = uuid.v1();
-        Provider.save(params).then((ret, err)=>{
-            console.log(ret, err);
+        params.prov_ctime = new Date();
+        Provider.build(params).save().then((ret)=>{
+            callback(true);
+        }).catch(function(error) {
+            callback(false);
+        });
+    },
+
+    /**
+     *
+     */
+    deleteById(id, callback){
+        Provider.destroy({where : {prov_id: id}}).then(function(ret){
+            callback(true);
+        }).catch(function(error){
+            callback(false);
+        });
+    },
+
+    getProvider(id, callback){
+        Provider.findOne({where : {prov_id: id}}).then(function(provider){
+            callback(provider.dataValues);
+        }).catch(function(error){
+            callback(null);
+        });
+    },
+
+    saveEdit(params, callback){
+        //let provider = Provider.build(params);
+        Provider.update(params,{where: {prov_id: params.prov_id}}).then(function(ret){
+            callback(true);
+        }).catch(function(error){
+            callback(false);
         });
     }
 };

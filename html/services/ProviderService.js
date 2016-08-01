@@ -13,27 +13,23 @@ module.exports = {
         let pageSize = params.pageSize || 15;
         let offset = (pageNum-1) * pageSize;
 
-        let condition = {
-            offset: offset,
-            limit: pageSize
-        };
+        params.prov_name = params.prov_name ? params.prov_name : "";
+        let param = ["%" + (params.prov_name) + "%", pageSize, offset];
+        let sql = "select * from provider a, district b where a.prov_name like ? and b.dist_id=a.prov_areaid order by prov_ctime desc LIMIT ? OFFSET ?";
+        let count_sql = "select count(*) as count from ( select * from provider a, district b where a.prov_name like ? and b.dist_id=a.prov_areaid ) t";
+        db.query(count_sql, {raw: true, type: db.QueryTypes.SELECT,replacements: ["%" + (params.prov_name) + "%"]}).then(function(ret){
+            let count = ret[0].count;
+            db.query(sql, {raw: true, type: db.QueryTypes.SELECT,replacements:param})
+                .then(function(ret){
+                    let data = {
+                        total: count,
+                        pageNum: pageNum,
+                        pageSize: pageSize,
+                        data: ret
+                    };
 
-        if(params.prov_name){
-            condition.where = {
-                prov_name: {
-                    $like: "%" + (params.prov_name) + "%"
-                }
-            };
-        }
-        Provider.findAndCountAll(condition).then(function(ret){
-            let data = {
-                total: ret.count,
-                pageNum: pageNum,
-                pageSize: pageSize,
-                data: ret.rows
-            };
-
-            callback(data);
+                    callback(data);
+                });
         });
     },
 
@@ -46,6 +42,7 @@ module.exports = {
         Provider.build(params).save().then((ret)=>{
             callback(true);
         }).catch(function(error) {
+            console.error(error);
             callback(false);
         });
     },
@@ -62,8 +59,13 @@ module.exports = {
     },
 
     getProvider(id, callback){
-        Provider.findOne({where : {prov_id: id}}).then(function(provider){
-            callback(provider.dataValues);
+        let sql = "select * from provider a, district b where a.prov_id=? and b.dist_id=a.prov_areaid";
+        db.query(sql, {raw: true, type: db.QueryTypes.SELECT,replacements:[id]}).then(function(results){
+            if(results.length) {
+                callback(results[0]);
+            }else{
+                callback({});
+            }
         }).catch(function(error){
             callback(null);
         });

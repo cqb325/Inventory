@@ -23,6 +23,7 @@ let Page = React.createClass({
             prov_address: formItems["prov_address"].ref.getValue(),
             prov_type: formItems["prov_type"].ref.getValue(),
             prov_phone: formItems["prov_phone"].ref.getValue(),
+            prov_areaid: formItems["prov_areaid"].ref.getValue(),
             prov_contactName: formItems["prov_contactName"].ref.getValue()
         };
 
@@ -85,7 +86,7 @@ let Page = React.createClass({
                         <FormControl label="供应商名称: " type="text" name="prov_name" maxLength="75" grid={1} required></FormControl>
                         <FormControl label="供应商区县: " ref="comboTree" data={treeData} type="combotree" name="prov_areaid" grid={1} required></FormControl>
                         <FormControl label="供应商地址: " type="text" name="prov_address" maxLength="250" grid={1}></FormControl>
-                        <FormControl label="产品类型: " type="text" name="prov_type" maxLength="75" grid={1}></FormControl>
+                        <FormControl label="产品类型: " type="number" name="prov_type" maxLength="4" grid={1}></FormControl>
                         <FormControl label="联系电话: " type="number" name="prov_phone" maxLength="18" grid={1}></FormControl>
                         <FormControl label="联系人: " type="text" name="prov_contactName" maxLength="10" grid={1}></FormControl>
                     </Form>

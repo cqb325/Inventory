@@ -47,10 +47,21 @@ class ComboTree extends BaseComponent {
      */
     _renderValues() {
         let item = this.selectedItems[this.state.value];
-        let label = item ? item["text"] : this.props.placeholder ? this.props.placeholder + "&nbsp;" : "&nbsp;",
+        let label = "",
             className = classnames("cm-select-value", {
             placeholder: !item && this.props.placeholder
         });
+        if (item) {
+            let parent = item;
+            let text = [];
+            while (parent) {
+                text.unshift(parent.text);
+                parent = parent._parent;
+            }
+            label = text.join(",");
+        } else {
+            label = this.props.placeholder ? this.props.placeholder + "&nbsp;" : "&nbsp;";
+        }
 
         let html = label + '<input type="hidden" name="' + this.props.name + '" value="' + this.state.value + '">';
         return React.createElement("span", { className: className, dangerouslySetInnerHTML: { __html: html } });
@@ -130,7 +141,7 @@ class ComboTree extends BaseComponent {
      * @method showOptions
      */
     showOptions() {
-        if (this.props.readOnly || this.props.disabled) {
+        if (this.state.active || this.props.readOnly || this.props.disabled) {
             return;
         }
 
@@ -245,7 +256,7 @@ ComboTree.propTypes = {
      * @attribute value
      * @type {String}
      */
-    value: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     /**
      * 自定义class
      * @attribute className

@@ -10,6 +10,10 @@ const ProductList = require('./products/list');
 const ProductAdd = require('./products/add');
 const ProductEdit = require('./products/edit');
 
+const ClientList = require('./client/list');
+const ClientAdd = require('./client/add');
+const ClientEdit = require('./client/edit');
+
 const ReactRouter = require('react-router');
 const Router = ReactRouter.Router;
 const hashHistory = ReactRouter.hashHistory;
@@ -25,7 +29,7 @@ const APP = {
     sysName: "CLY",
     menus: [
         {id:"1", text: "供应商管理",icon: "fa fa-suitcase",link: "SupplierList", component: SupplierList},
-        {id:"2", text: "客户管理",icon: "fa fa-user",link: "SupplierList", component: SupplierList},
+        {id:"2", text: "客户管理",icon: "fa fa-user",link: "ClientList", component: ClientList},
         {id:"3", text: "产品入库",icon: "fa fa-inbox",link: "SupplierList", component: SupplierList},
         {id:"4", text: "产品出库",icon: "fa fa-dropbox",link: "SupplierList", component: SupplierList},
         {id:"5", text: "库存统计",icon: "fa fa-pie-chart",link: "SupplierList", component: SupplierList}
@@ -75,6 +79,8 @@ ReactDOM.render((
             <Route path="product_list(/:id)" component={ProductList}/>
             <Route path="product_add(/:prov_id)" component={ProductAdd}/>
             <Route path="product_edit(/:prod_id)" component={ProductEdit}/>
+            <Route path="client_add" component={ClientAdd}/>
+            <Route path="client_edit(/:cli_id)" component={ClientEdit}/>
         </Route>
     </Router>
 ), document.querySelector("#desktop"));

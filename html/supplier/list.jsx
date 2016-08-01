@@ -84,18 +84,18 @@ let List = React.createClass({
         let scope = this;
         let btnFormat = function(value, column, row){
             return (<span>
-                <Button icon="edit" flat={true} href={"#provider_edit/"+row.prov_id}>编辑</Button>
-                <Button icon="trash" flat={true} onClick={scope.showConfirm.bind(scope, row.prov_id)}>删除</Button>
-                <Button icon="list" flat={true} href={"#product_list/"+row.prov_id}>产品</Button>
+                <Button theme="success" className="ml-10" icon="edit" flat={true} href={"#provider_edit/"+row.prov_id}>编辑</Button>
+                <Button theme="success" className="ml-10" icon="trash" flat={true} onClick={scope.showConfirm.bind(scope, row.prov_id)}>删除</Button>
+                <Button theme="success" className="ml-10" icon="list" flat={true} href={"#product_list/"+row.prov_id}>产品</Button>
             </span>);
         };
         let header = [
-            {name: "prov_name", text: "名称"},
+            {name: "prov_name", text: "名称", tip: true},
             {name: "prov_type", text: "产品类型"},
             {name: "prov_contactName", text: "联系人"},
             {name: "prov_phone", text: "联系电话"},
-            {name: "prov_ctime", text: "创建时间", format: "DateTimeFormat"},
-            {name: "prov_address", text: "地址"},
+            {name: "dist_mergername", text: "区域"},
+            {name: "prov_address", text: "地址", tip: true},
             {name: "ops", text: "操作", format: btnFormat}
         ];
         return (

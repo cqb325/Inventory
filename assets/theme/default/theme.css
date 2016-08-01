@@ -1893,3 +1893,6 @@ a:focus {
   background: rgba(0, 0, 0, 0.2);
   filter: alpha(opacity=20);
 }
+.pagination {
+  margin: 0;
+}

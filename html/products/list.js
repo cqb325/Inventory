@@ -90,17 +90,17 @@ let List = React.createClass({
                 null,
                 React.createElement(
                     Button,
-                    { icon: 'edit', flat: true, href: "#product_edit/" + row.prod_id },
+                    { theme: 'success', className: 'ml-10', icon: 'edit', flat: true, href: "#product_edit/" + row.prod_id },
                     '编辑'
                 ),
                 React.createElement(
                     Button,
-                    { icon: 'trash', flat: true, onClick: scope.showConfirm.bind(scope, row.prod_id) },
+                    { theme: 'success', className: 'ml-10', icon: 'trash', flat: true, onClick: scope.showConfirm.bind(scope, row.prod_id) },
                     '删除'
                 )
             );
         };
-        let header = [{ name: "prod_name", text: "名称" }, { name: "prod_price", text: "单价" }, { name: "prod_brand", text: "品牌" }, { name: "prod_type", text: "类型" }, { name: "prod_model", text: "型号" }, { name: "prod_specifications", text: "规格" }, { name: "ops", text: "操作", format: btnFormat }];
+        let header = [{ name: "prod_name", text: "名称", tip: true }, { name: "prod_price", text: "单价" }, { name: "prod_brand", text: "品牌" }, { name: "prod_type", text: "类型" }, { name: "prod_model", text: "型号" }, { name: "prod_specifications", text: "规格" }, { name: "ops", text: "操作", format: btnFormat }];
         return React.createElement(
             'div',
             { className: 'main-container' },

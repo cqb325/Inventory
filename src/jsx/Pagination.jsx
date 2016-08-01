@@ -357,13 +357,13 @@ class Pagination extends BaseComponent {
         }
 
         return (
-            <div className="data-page pull-right mt-10">
+            <div className="data-page pull-right mt-10 mb-10 mr-10">
                 <ul className="pagination" style={{float: "left"}}>
                     <PagePrev current={current} onClick={this._prev.bind(this, null)}/>
                     {pagerList}
                     <PageNext current={current} onClick={this._next.bind(this, null)} disabled={current==pages}/>
                 </ul>
-                <div style={{display: "inline-block",float: "left", margin: "25px 0"}}>
+                <div style={{display: "inline-block",float: "left", margin: "0"}}>
                     <span className="ml-10">共{pages}页</span>&nbsp;
                     <span className="page-code">
                         每页<select name="pageSize" className="pageSize" value={this.state.pageSize} ref="pageSize" onChange={this._selectPageSize.bind(this, null)}>

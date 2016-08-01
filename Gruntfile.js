@@ -21,6 +21,15 @@ module.exports = function(grunt) {
                     ext: '.css'
                 }]
             },
+            comp: {
+                files: [{
+                    expand: true,
+                    cwd: './src/theme/',
+                    src: ['**/*.less'],
+                    dest: './assets/theme/',
+                    ext: '.css'
+                }]
+            },
             compileCore: {
                 options: {
                     strictMath: true,
@@ -40,6 +49,15 @@ module.exports = function(grunt) {
                     cwd: './assets/css/',
                     src: ['**/*.css','!**/*.min.css'],
                     dest: './assets/css/',
+                    ext: '.min.css'
+                }]
+            },
+            comp: {
+                files: [{
+                    expand: true,
+                    cwd: './assets/theme/',
+                    src: ['**/*.css','!**/*.min.css'],
+                    dest: './assets/theme/',
                     ext: '.min.css'
                 }]
             }
@@ -79,7 +97,7 @@ module.exports = function(grunt) {
                 files: ['src/**/*.jsx','html/**/*.jsx'],
                 tasks: ["babel"]
             },
-            files: ['src/less/**/*.less'],
+            files: ['src/less/**/*.less',"src/theme/**/*.less"],
             tasks: ["less",'cssmin']
         }
     });

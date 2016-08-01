@@ -8,6 +8,7 @@ module.exports = function(sequelize, DataTypes){
         dist_parentid         : DataTypes.STRING,
         dist_shortname        : DataTypes.STRING,
         dist_level            : DataTypes.STRING,
+        dist_mergername       : DataTypes.STRING,
         dist_zipcode          : DataTypes.STRING,
         dist_lon              : DataTypes.DOUBLE,
         dist_lat              : DataTypes.DOUBLE,

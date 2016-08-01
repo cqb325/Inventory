@@ -12,7 +12,7 @@ module.exports = {
                 let items = districts.map(function(district){
                     return {
                         id: district.dataValues.dist_id,
-                        text: district.dataValues.dist_shortname,
+                        text: district.dataValues.dist_name,
                         children: []
                     };
                 });

@@ -393,7 +393,7 @@ class Pagination extends BaseComponent {
 
         return React.createElement(
             "div",
-            { className: "data-page pull-right mt-10" },
+            { className: "data-page pull-right mt-10 mb-10 mr-10" },
             React.createElement(
                 "ul",
                 { className: "pagination", style: { float: "left" } },
@@ -403,7 +403,7 @@ class Pagination extends BaseComponent {
             ),
             React.createElement(
                 "div",
-                { style: { display: "inline-block", float: "left", margin: "25px 0" } },
+                { style: { display: "inline-block", float: "left", margin: "0" } },
                 React.createElement(
                     "span",
                     { className: "ml-10" },

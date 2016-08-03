@@ -33,6 +33,20 @@ module.exports = {
         });
     },
 
+    getAll(callback){
+        Provider.findAll({order: [["prov_name","ASC"]]}).then(function(providers){
+            let ret = providers.map(function(provider){
+                let prod = provider.dataValues;
+                prod.id = prod.prov_id;
+                prod.text = prod.prov_name;
+                return prod;
+            });
+            callback(ret);
+        }).catch(function(error) {
+            callback(null);
+        });
+    },
+
     /**
      * ±£´æ
      */

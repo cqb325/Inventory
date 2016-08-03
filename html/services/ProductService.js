@@ -37,6 +37,17 @@ module.exports = {
         });
     },
 
+    getAll(prov_id, callback){
+        Product.findAll({where: {prov_id: prov_id}}).then(function(products){
+            let ret = products.map(function(product){
+                return product.dataValues;
+            });
+            callback(ret);
+        }).catch(function(error) {
+            callback(null);
+        });
+    },
+
     /**
      * É¾³ý²úÆ·
      */

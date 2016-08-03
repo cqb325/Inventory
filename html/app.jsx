@@ -14,6 +14,8 @@ const ClientList = require('./client/list');
 const ClientAdd = require('./client/add');
 const ClientEdit = require('./client/edit');
 
+const ImportList = require('./orderin/list');
+
 const ReactRouter = require('react-router');
 const Router = ReactRouter.Router;
 const hashHistory = ReactRouter.hashHistory;
@@ -30,7 +32,7 @@ const APP = {
     menus: [
         {id:"1", text: "供应商管理",icon: "fa fa-suitcase",link: "SupplierList", component: SupplierList},
         {id:"2", text: "客户管理",icon: "fa fa-user",link: "ClientList", component: ClientList},
-        {id:"3", text: "产品入库",icon: "fa fa-inbox",link: "SupplierList", component: SupplierList},
+        {id:"3", text: "产品入库",icon: "fa fa-inbox",link: "ImportList", component: ImportList},
         {id:"4", text: "产品出库",icon: "fa fa-dropbox",link: "SupplierList", component: SupplierList},
         {id:"5", text: "库存统计",icon: "fa fa-pie-chart",link: "SupplierList", component: SupplierList}
     ]

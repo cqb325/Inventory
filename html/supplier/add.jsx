@@ -81,14 +81,14 @@ let Page = React.createClass({
                     </Label>
                 </Label>
 
-                <Tile header="供应商信息">
+                <Tile header={<span><img src={IMGPATH+"icon-gys.png"}/> 供应商信息</span>}>
                     <Form ref="form" method="custom" layout="stack" submit={this.submit}>
-                        <FormControl label="供应商名称: " type="text" name="prov_name" maxLength="75" grid={1} required></FormControl>
-                        <FormControl label="供应商区县: " ref="comboTree" data={treeData} type="combotree" name="prov_areaid" grid={1} required></FormControl>
-                        <FormControl label="供应商地址: " type="text" name="prov_address" maxLength="250" grid={1}></FormControl>
-                        <FormControl label="产品类型: " type="number" name="prov_type" maxLength="4" grid={1}></FormControl>
-                        <FormControl label="联系电话: " type="number" name="prov_phone" maxLength="18" grid={1}></FormControl>
-                        <FormControl label="联系人: " type="text" name="prov_contactName" maxLength="10" grid={1}></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-user.png"}/> 供应商名称: </span>} type="text" name="prov_name" maxLength="75" grid={1} required></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-location.png"}/> 供应商区县: </span>} ref="comboTree" data={treeData} type="combotree" name="prov_areaid" grid={1} required></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-address.png"}/> 供应商地址: </span>} type="text" name="prov_address" maxLength="250" grid={1}></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-product.png"}/> 产品类型: </span>} type="number" name="prov_type" maxLength="4" grid={1}></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-phone.png"}/> 联系电话: </span>} type="number" name="prov_phone" maxLength="11" grid={1}></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-contact.png"}/> 联系人: </span>} type="text" name="prov_contactName" maxLength="10" grid={1}></FormControl>
                     </Form>
                 </Tile>
 

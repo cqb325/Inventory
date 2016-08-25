@@ -83,5 +83,20 @@ module.exports = {
         }).catch(function(error){
             callback(false);
         });
+    },
+
+    /**
+     * 获取所有库存中的产品
+     */
+    getAllStoredProducts(callback){
+        let sql = "select a.*, b.amount from product a, stock b where a.prod_id=b.prod_id and b.amount > 0";
+        db.query(sql, {
+            raw: true,
+            type: db.QueryTypes.SELECT
+        }).then(function (ret) {
+            callback(ret);
+        }).catch(function(){
+            callback(null);
+        });
     }
 };

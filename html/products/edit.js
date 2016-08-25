@@ -8,7 +8,9 @@ const Form = require('../lib/Form');
 const FormControl = require('../lib/FormControl');
 const Label = require('../lib/Label');
 const Button = require('../lib/Button');
+const Select = require('../lib/Select');
 const MessageBox = require('../lib/MessageBox');
+const Format = require('../format');
 
 const ProductService = require("../services/ProductService");
 
@@ -31,6 +33,7 @@ let Page = React.createClass({
             prod_brand: formItems["prod_brand"].ref.getValue(),
             prod_type: formItems["prod_type"].ref.getValue(),
             prod_model: formItems["prod_model"].ref.getValue(),
+            prod_unit: formItems["prod_unit"].ref.getValue(),
             prod_specifications: formItems["prod_specifications"].ref.getValue()
         };
 
@@ -59,7 +62,7 @@ let Page = React.createClass({
 
     render() {
         let product = this.state.product;
-        console.log(product);
+        let unitData = Format.unitData;
         return React.createElement(
             'div',
             { className: 'main-container' },
@@ -97,7 +100,8 @@ let Page = React.createClass({
                     React.createElement(FormControl, { label: '产品品牌: ', value: product ? product.prod_brand : "", type: 'text', name: 'prod_brand', maxLength: '50', grid: 1 }),
                     React.createElement(FormControl, { label: '产品类型: ', value: product ? product.prod_type : "", type: 'text', name: 'prod_type', grid: 1 }),
                     React.createElement(FormControl, { label: '产品型号: ', value: product ? product.prod_model : "", type: 'text', name: 'prod_model', grid: 1 }),
-                    React.createElement(FormControl, { label: '产品规格: ', value: product ? product.prod_specifications : "", type: 'text', name: 'prod_specifications', grid: 1 })
+                    React.createElement(FormControl, { label: '产品规格: ', value: product ? product.prod_specifications : "", type: 'text', name: 'prod_specifications', grid: 1 }),
+                    React.createElement(FormControl, { label: '产品单位: ', value: product ? product.prod_unit : "", type: 'select', data: unitData, name: 'prod_unit', grid: 1 })
                 )
             )
         );

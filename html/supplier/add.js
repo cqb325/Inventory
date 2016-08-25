@@ -99,16 +99,51 @@ let Page = React.createClass({
             ),
             React.createElement(
                 Tile,
-                { header: '供应商信息' },
+                { header: React.createElement(
+                        'span',
+                        null,
+                        React.createElement('img', { src: IMGPATH + "icon-gys.png" }),
+                        ' 供应商信息'
+                    ) },
                 React.createElement(
                     Form,
                     { ref: 'form', method: 'custom', layout: 'stack', submit: this.submit },
-                    React.createElement(FormControl, { label: '供应商名称: ', type: 'text', name: 'prov_name', maxLength: '75', grid: 1, required: true }),
-                    React.createElement(FormControl, { label: '供应商区县: ', ref: 'comboTree', data: treeData, type: 'combotree', name: 'prov_areaid', grid: 1, required: true }),
-                    React.createElement(FormControl, { label: '供应商地址: ', type: 'text', name: 'prov_address', maxLength: '250', grid: 1 }),
-                    React.createElement(FormControl, { label: '产品类型: ', type: 'number', name: 'prov_type', maxLength: '4', grid: 1 }),
-                    React.createElement(FormControl, { label: '联系电话: ', type: 'number', name: 'prov_phone', maxLength: '18', grid: 1 }),
-                    React.createElement(FormControl, { label: '联系人: ', type: 'text', name: 'prov_contactName', maxLength: '10', grid: 1 })
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
+                            React.createElement('img', { src: IMGPATH + "icon-user.png" }),
+                            ' 供应商名称: '
+                        ), type: 'text', name: 'prov_name', maxLength: '75', grid: 1, required: true }),
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
+                            React.createElement('img', { src: IMGPATH + "icon-location.png" }),
+                            ' 供应商区县: '
+                        ), ref: 'comboTree', data: treeData, type: 'combotree', name: 'prov_areaid', grid: 1, required: true }),
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
+                            React.createElement('img', { src: IMGPATH + "icon-address.png" }),
+                            ' 供应商地址: '
+                        ), type: 'text', name: 'prov_address', maxLength: '250', grid: 1 }),
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
+                            React.createElement('img', { src: IMGPATH + "icon-product.png" }),
+                            ' 产品类型: '
+                        ), type: 'number', name: 'prov_type', maxLength: '4', grid: 1 }),
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
+                            React.createElement('img', { src: IMGPATH + "icon-phone.png" }),
+                            ' 联系电话: '
+                        ), type: 'number', name: 'prov_phone', maxLength: '11', grid: 1 }),
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
+                            React.createElement('img', { src: IMGPATH + "icon-contact.png" }),
+                            ' 联系人: '
+                        ), type: 'text', name: 'prov_contactName', maxLength: '10', grid: 1 })
                 )
             )
         );

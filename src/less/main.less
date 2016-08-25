@@ -1,3 +1,9 @@
+*{
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 .desktop-wrap {
   left: 200px;
   top: 0;
@@ -69,4 +75,105 @@
 .cm-form-group .error-tip{
   right: 0%;
   top: 100%;
+}
+
+.step-progress {
+  margin-top: 60px;
+  li{
+    &:hover a:before,
+    &.active a:before {
+      color: #fff;
+      background-color: #337AB7;
+    }
+    &:hover a:after,
+    &.active a:after {
+      background-color: #337AB7;
+    }
+    &:first-child a:after {
+      border-radius: 5px 0 0 5px;
+    }
+    &:last-child a:after {
+      border-radius: 0 5px 5px 0;
+    }
+    a{
+      &:hover{
+        background-color: rgba(0, 0, 0, 0);
+        color: #337AB7;
+      }
+      span.caret{
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        transform: rotate(180deg);
+        top: -4px;
+      }
+      &:before {
+        position: absolute;
+        z-index: 2;
+        top: -35px;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        line-height: 2rem;
+        box-shadow: 0 0 0 5px rgb(204, 204, 204);
+      }
+      &:after {
+        content: "";
+        background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0) 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, rgba(0, 0, 0, 0) 75%, rgba(0, 0, 0, 0));
+        background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
+        background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0) 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, rgba(0, 0, 0, 0) 75%, rgba(0, 0, 0, 0));
+        -webkit-background-size: 40px 40px;
+        background-size: 40px 40px;
+        background-color: #CCCCCC;
+        float: left;
+        width: 100%;
+        -webkit-transition: width .6s ease;
+        -o-transition: width .6s ease;
+        transition: width .6s ease;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 10px;
+      }
+    }
+  }
+
+  &>li.active{
+    &>a,
+    &>a:focus,
+    &>a:hover {
+      color: #337AB7;
+      background-color: rgba(0, 0, 0, 0);
+    }
+  }
+}
+.step {
+  counter-reset: flag;
+  >li {
+    float: none !important;
+    position: relative;
+    >a{
+      color: #CCCCCC;
+    }
+    a:before {
+      content: counter(flag);
+      counter-increment: flag;
+    }
+  }
+}
+
+.underline{
+  padding: 0 10px;
+  border-bottom: 1px solid #518DC1;
+}
+
+
+.cm-datetime .date-text{
+  min-width: 115px;
 }

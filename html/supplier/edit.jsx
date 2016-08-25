@@ -102,14 +102,14 @@ let Page = React.createClass({
                     </Label>
                 </Label>
 
-                <Tile header="供应商信息">
+                <Tile header={<span><img src={IMGPATH+"icon-gys.png"}/> 供应商信息</span>}>
                     <Form ref="form" method="custom" layout="stack" submit={this.submit}>
-                        <FormControl label="供应商名称: " value={provider ? provider.prov_name : ""} type="text" name="prov_name" maxLength="75" grid={1} required></FormControl>
-                        <FormControl label="供应商区县: " value={provider ? provider.prov_areaid : ""} ref="comboTree" data={treeData} type="combotree" name="prov_areaid" grid={1} required></FormControl>
-                        <FormControl label="供应商地址: " value={provider ? provider.prov_address : ""} type="text" name="prov_address" maxLength="250" grid={1}></FormControl>
-                        <FormControl label="产品类型: " value={provider ? provider.prov_type : ""} type="text" name="prov_type" maxLength="75" grid={1}></FormControl>
-                        <FormControl label="联系电话: " value={provider ? provider.prov_phone : ""} type="number" name="prov_phone" maxLength="18" grid={1}></FormControl>
-                        <FormControl label="联系人: " value={provider ? provider.prov_contactName : ""} type="text" name="prov_contactName" maxLength="10" grid={1}></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-user.png"}/> 供应商名称: </span>} value={provider ? provider.prov_name : ""} type="text" name="prov_name" maxLength="75" grid={1} required></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-location.png"}/> 供应商区县: </span>} value={provider ? provider.prov_areaid : ""} ref="comboTree" data={treeData} type="combotree" name="prov_areaid" grid={1} required></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-address.png"}/> 供应商地址: </span>} value={provider ? provider.prov_address : ""} type="text" name="prov_address" maxLength="250" grid={1}></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-product.png"}/> 产品类型: </span>} value={provider ? provider.prov_type : ""} type="text" name="prov_type" maxLength="75" grid={1}></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-phone.png"}/> 联系电话: </span>} value={provider ? provider.prov_phone : ""} type="number" name="prov_phone" maxLength="11" grid={1}></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-contact.png"}/> 联系人: </span>} value={provider ? provider.prov_contactName : ""} type="text" name="prov_contactName" maxLength="10" grid={1}></FormControl>
                     </Form>
                 </Tile>
 

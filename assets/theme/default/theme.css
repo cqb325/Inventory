@@ -155,7 +155,7 @@
 }
 .cm-accordion.white ul li a {
   background: #fff;
-  color: #555555;
+  color: #555;
 }
 .cm-accordion.white > ul > li.active > a,
 .cm-accordion.white > ul > li:hover > a {
@@ -523,7 +523,7 @@ a:focus {
   padding: 4px 30px 4px 10px;
   border: 1px solid #ccc;
   border-radius: 2px;
-  color: #333333;
+  color: #333;
   width: 100%;
   min-width: 150px;
   display: inline-block;
@@ -552,7 +552,7 @@ a:focus {
 .cm-datetime .date-picker-header a {
   display: inline-block;
   padding: 4px;
-  color: #333333;
+  color: #333;
   text-decoration: none;
 }
 .cm-datetime .date-picker-header a.year,
@@ -584,7 +584,7 @@ a:focus {
   width: 27px;
   padding: 4px 0;
   margin: 1px;
-  color: #333333;
+  color: #333;
   text-align: center;
   display: inline-block;
   border: none;
@@ -604,7 +604,7 @@ a:focus {
   padding: 10px 0;
 }
 .cm-datetime .month.disabled {
-  color: #cccccc;
+  color: #ccc;
   pointer-events: none;
   cursor: default;
 }
@@ -616,11 +616,11 @@ a:focus {
 .cm-datetime button.day.today,
 .cm-datetime button.day:hover,
 .cm-datetime button.day.rangeSelect {
-  background-color: #ffe684;
+  background-color: #FFE684;
 }
 .cm-datetime button.day.disabled,
 .cm-datetime button.day.gray {
-  color: #cccccc;
+  color: #ccc;
 }
 .cm-datetime button.day.disabled {
   pointer-events: none;
@@ -704,7 +704,7 @@ a:focus {
   margin-left: -6px;
 }
 .cm-form-group .error-tip.top:before {
-  border-top-color: #e05b5b;
+  border-top-color: #E05B5B;
   margin-left: -7px;
 }
 .cm-form-group.inline {
@@ -763,10 +763,11 @@ a:focus {
 }
 .cm-select .cm-select-value {
   padding: 4px 30px 4px 10px;
+  width: 100%;
   height: 30px;
   border: 1px solid #ccc;
   border-radius: 2px;
-  color: #333333;
+  color: #333;
   min-width: 150px;
   display: block;
   background-color: #fff;
@@ -779,7 +780,7 @@ a:focus {
   user-select: none;
 }
 .cm-select .cm-select-value.placeholder {
-  color: #999999;
+  color: #999;
 }
 .cm-select .cm-select-cert {
   position: absolute;
@@ -1096,7 +1097,7 @@ a:focus {
 .cm-sidebar.white .sidebar-header,
 .cm-sidebar.white ul li a {
   background: #fff;
-  color: #555555;
+  color: #555;
 }
 .cm-sidebar.white .sidebar-footer {
   border-bottom-color: #f0f0f0;
@@ -1336,7 +1337,7 @@ a:focus {
 .cm-progress .cm-progress-bar {
   width: 0;
   height: 100%;
-  background-color: #dddddd;
+  background-color: #ddd;
   color: #333;
   font-size: 12px;
   padding: 0 5px;
@@ -1869,7 +1870,7 @@ a:focus {
 }
 .cm-panel.cm-messageBox {
   background: #fff;
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   z-index: 50000;

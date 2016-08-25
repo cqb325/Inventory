@@ -102,11 +102,36 @@ let Page = React.createClass({
                 React.createElement(
                     Form,
                     { ref: 'form', method: 'custom', layout: 'stack', submit: this.submit },
-                    React.createElement(FormControl, { label: '客户名称: ', type: 'text', name: 'cli_name', maxLength: '75', grid: 1, required: true }),
-                    React.createElement(FormControl, { label: '客户区县: ', ref: 'comboTree', data: treeData, type: 'combotree', name: 'cli_areaid', grid: 1, required: true }),
-                    React.createElement(FormControl, { label: '客户地址: ', type: 'text', name: 'cli_address', maxLength: '250', grid: 1 }),
-                    React.createElement(FormControl, { label: '联系电话: ', type: 'number', name: 'cli_phone', maxLength: '18', grid: 1 }),
-                    React.createElement(FormControl, { label: '联系人: ', type: 'text', name: 'cli_contact', maxLength: '10', grid: 1 })
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
+                            React.createElement('img', { src: IMGPATH + "icon-user.png" }),
+                            ' 客户名称: '
+                        ), type: 'text', name: 'cli_name', maxLength: '75', grid: 1, required: true }),
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
+                            React.createElement('img', { src: IMGPATH + "icon-location.png" }),
+                            ' 客户区县: '
+                        ), ref: 'comboTree', data: treeData, type: 'combotree', name: 'cli_areaid', grid: 1, required: true }),
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
+                            React.createElement('img', { src: IMGPATH + "icon-address.png" }),
+                            ' 客户地址: '
+                        ), type: 'text', name: 'cli_address', maxLength: '250', grid: 1 }),
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
+                            React.createElement('img', { src: IMGPATH + "icon-phone.png" }),
+                            ' 联系电话: '
+                        ), type: 'number', name: 'cli_phone', maxLength: '18', grid: 1 }),
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
+                            React.createElement('img', { src: IMGPATH + "icon-contact.png" }),
+                            ' 联系人: '
+                        ), type: 'text', name: 'cli_contact', maxLength: '10', grid: 1 })
                 )
             )
         );

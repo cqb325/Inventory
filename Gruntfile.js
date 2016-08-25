@@ -108,9 +108,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-react');
     grunt.loadNpmTasks('grunt-babel');
 
     // 只需在命令行上输入"grunt"，就会执行default task
-    grunt.registerTask('default', ['less','cssmin']);
+    grunt.registerTask('default', ['watch']);
 };

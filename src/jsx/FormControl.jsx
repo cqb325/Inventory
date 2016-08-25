@@ -168,12 +168,14 @@ class FormControl extends BaseComponent {
 
         if(trigger && trigger == event.type) {
             let valid = this.check(value);
+            if (!valid) {
+                if(this.props.onValid){
+                    this.props.onValid(value, false, this);
+                }
+                this.emit("valid", value, false, this);
+            }
             if(this.props.onChange){
                 this.props.onChange(value);
-            }
-
-            if (valid) {
-            } else {
             }
         }
     }
@@ -214,7 +216,7 @@ class FormControl extends BaseComponent {
         if(this.item.props.valueType === 'array'){
             value = value ? value.split(",") : [];
         }
-        console.log(value);
+        //console.log(value);
 
         if(rules["required"]){
             rule = { method: "required", parameters: rules[ "required" ] };
@@ -344,6 +346,24 @@ class FormControl extends BaseComponent {
      */
     setErrorTip(msg){
         this.setState({errorTip: msg});
+    }
+
+    /**
+     * 动态设置验证规则
+     * @param rule
+     * @param rule_args
+     */
+    setRule(rule, rule_args){
+        this.rules[rule] = rule_args;
+    }
+
+    /**
+     * 动态设置验证提示消息
+     * @param rule
+     * @param message
+     */
+    setMessage(rule, message){
+        this.messages[rule] = message;
     }
 
     render(){

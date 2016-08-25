@@ -13,6 +13,7 @@ const Pagination = require('../lib/Pagination');
 const Input = require('../lib/Input');
 const FormControl = require('../lib/FormControl');
 const MessageBox = require('../lib/MessageBox');
+const FontIcon = require('../lib/FontIcon');
 
 const ClientService = require("../services/ClientService");
 
@@ -131,7 +132,12 @@ let List = React.createClass({
             ),
             React.createElement(
                 Tile,
-                { header: '客户列表', contentStyle: { padding: "0px" } },
+                { header: React.createElement(
+                        'span',
+                        null,
+                        React.createElement(FontIcon, { icon: 'list', style: { color: "#EA8010" } }),
+                        ' 客户列表'
+                    ), contentStyle: { padding: "0px" } },
                 React.createElement(
                     'div',
                     { style: { overflow: 'hidden' } },

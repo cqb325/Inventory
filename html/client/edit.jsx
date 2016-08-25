@@ -103,11 +103,11 @@ let Page = React.createClass({
 
                 <Tile header="客户信息">
                     <Form ref="form" method="custom" layout="stack" submit={this.submit}>
-                        <FormControl label="客户名称: " value={client ? client.cli_name : ""} type="text" name="cli_name" maxLength="75" grid={1} required></FormControl>
-                        <FormControl label="客户区县: " value={client ? client.cli_areaid : ""} ref="comboTree" data={treeData} type="combotree" name="cli_areaid" grid={1} required></FormControl>
-                        <FormControl label="客户地址: " value={client ? client.cli_address : ""} type="text" name="cli_address" maxLength="250" grid={1}></FormControl>
-                        <FormControl label="联系电话: " value={client ? client.cli_phone : ""} type="number" name="cli_phone" maxLength="18" grid={1}></FormControl>
-                        <FormControl label="联系人: " value={client ? client.cli_contact : ""} type="text" name="cli_contact" maxLength="10" grid={1}></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-user.png"}/> 客户名称: </span>} value={client ? client.cli_name : ""} type="text" name="cli_name" maxLength="75" grid={1} required></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-location.png"}/> 客户区县: </span>} value={client ? client.cli_areaid : ""} ref="comboTree" data={treeData} type="combotree" name="cli_areaid" grid={1} required></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-address.png"}/> 客户地址: </span>} value={client ? client.cli_address : ""} type="text" name="cli_address" maxLength="250" grid={1}></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-phone.png"}/> 联系电话: </span>} value={client ? client.cli_phone : ""} type="number" name="cli_phone" maxLength="18" grid={1}></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-contact.png"}/> 联系人: </span>} value={client ? client.cli_contact : ""} type="text" name="cli_contact" maxLength="10" grid={1}></FormControl>
                     </Form>
                 </Tile>
 

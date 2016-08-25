@@ -104,6 +104,14 @@ class Select extends BaseComponent {
      */
     _renderValues() {
         let item = this.selectedItems[this.state.value];
+        let valueField = this.props.valueField || "id";
+        if (!item && this.state.data) {
+            this.state.data.forEach(aitem => {
+                if (aitem[valueField] === this.state.value) {
+                    item = aitem;
+                }
+            });
+        }
         let textField = this.props.textField || "text",
             label = item ? item[textField] : this.props.placeholder ? this.props.placeholder + "&nbsp;" : "&nbsp;",
             className = classnames("cm-select-value", {
@@ -137,6 +145,7 @@ class Select extends BaseComponent {
             if (!this.props.multi) {
                 this.hideOptions();
             }
+            this.selectedItems = {};
         } else {
             if (this.props.multi) {
                 this.selectedItems[item[valueField]] = item;
@@ -347,6 +356,13 @@ class Select extends BaseComponent {
                     });
                 }
             });
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        let value = nextProps.value;
+        if (value !== this.props.value && value !== this.state.value) {
+            this.setState({ value });
         }
     }
 

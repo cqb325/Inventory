@@ -34,6 +34,20 @@ module.exports = {
         });
     },
 
+    getAll(callback){
+        Client.findAll({order: [["cli_name","ASC"]]}).then(function(clients){
+            let ret = clients.map(function(client){
+                let prod = client.dataValues;
+                prod.id = prod.cli_id;
+                prod.text = prod.cli_name;
+                return prod;
+            });
+            callback(ret);
+        }).catch(function(error) {
+            callback(null);
+        });
+    },
+
     /**
      * ±£´æ
      */

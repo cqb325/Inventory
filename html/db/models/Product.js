@@ -11,6 +11,7 @@ module.exports = function(sequelize, DataTypes){
         prod_type           : DataTypes.STRING,
         prod_model          : DataTypes.STRING,
         prod_specifications : DataTypes.STRING,
-        prod_ctime          : DataTypes.DATE
+        prod_ctime          : DataTypes.DATE,
+        prod_unit           : DataTypes.STRING
     });
 };

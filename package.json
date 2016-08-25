@@ -1,6 +1,5 @@
 {
   "name": "inventory",
-  "version": "0.0.1",
   "main": "main.js",
   "dependencies": {
     "mysql": "^2.11.1",

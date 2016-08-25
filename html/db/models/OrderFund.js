@@ -6,6 +6,7 @@ module.exports = function(sequelize, DataTypes){
         fund_id                  : { type: DataTypes.STRING, primaryKey: true },
         ord_no                   : DataTypes.STRING,
         fund                     : DataTypes.FLOAT,
+        remain                   : DataTypes.FLOAT,
         time                     : DataTypes.DATE,
         comment                  : DataTypes.STRING
     });

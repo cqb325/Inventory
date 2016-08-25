@@ -129,9 +129,10 @@ module.exports = {
     payFund(params, order, callback){
         params.fund_id = uuid.v1();
         params.time = new Date();
+        let remain = order.ord_fund_remain - params.fund;
+        params.remain = remain;
 
         OrderFund.build(params).save().then(function(){
-            let remain = order.ord_fund_remain - params.fund;
             let orderParam = {
                 ord_fund_remain: remain
             };

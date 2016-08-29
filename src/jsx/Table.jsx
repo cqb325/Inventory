@@ -221,7 +221,11 @@ Table.Formats = {
      * @constructor
      */
     DateFormat: function(value, column, row){
-        return moment(value).format("YYYY-MM-DD");
+        if(value) {
+            return moment(value).format("YYYY-MM-DD");
+        }else{
+            return "";
+        }
     },
 
     /**
@@ -233,7 +237,11 @@ Table.Formats = {
      * @constructor
      */
     DateTimeFormat: function(value, column, row){
-        return moment(value).format("YYYY-MM-DD HH:mm:ss");
+        if(value) {
+            return moment(value).format("YYYY-MM-DD HH:mm:ss");
+        }else{
+            return "";
+        }
     }
 };
 

@@ -8,11 +8,13 @@ const Table = require('../lib/Table');
 const Input = require('../lib/Input');
 const Select = require('../lib/Select');
 const Form = require('../lib/Form');
+const DateTime = require('../lib/DateTime');
 const FormControl = require('../lib/FormControl');
 const MessageBox = require('../lib/MessageBox');
 const AutoComplete = require('../lib/AutoComplete');
 const Format = require('../format');
 const TextArea = require('../lib/TextArea');
+const moment = require('../lib/moment');
 
 const ImportService = require("../services/ImportService");
 const ProviderService = require("../services/ProviderService");
@@ -129,11 +131,16 @@ let Page = React.createClass({
         let total = totalEle.innerHTML;
 
         let formItems = this.refs.form.getItems();
+        if(!this.refs.form.isValid()){
+            return false;
+        }
         let params = {
             ord_contract: formItems["ord_contract"].ref.getValue(),
             prov_id: formItems["prov_id"].ref.getValue(),
             ord_comment: formItems["ord_comment"].ref.getValue(),
-            ord_fund: total
+            ord_fund: total,
+            sale_contract: formItems["sale_contract"].ref.getValue(),
+            ord_time: formItems["ord_time"].ref.getValue()
         };
 
         let import_table_Data = this.refs.import_table.state.data;
@@ -219,10 +226,12 @@ let Page = React.createClass({
                         </li>
                     </ul>
 
-                    <Form ref="form" method="custom" layout="stack" useDefaultSubmitBtn={false}>
-                        <FormControl label="合同号: " type="text" name="ord_contract" grid={1} required></FormControl>
-                        <FormControl label="供应商: " onChange={this.reloadProducts} ref="provider" type="autocomplete" data={[]} name="prov_id" grid={1} required></FormControl>
-                        <FormControl label="备注: " type="textarea" name="ord_comment" grid={1}></FormControl>
+                    <Form ref="form" method="custom" layout="stack" useDefaultSubmitBtn={false} className="mt-20">
+                        <FormControl label={<span><img src={IMGPATH+"contract.png"}/> 采购合同号: </span>} type="text" name="ord_contract" grid={1} required></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-clock.png"}/> 采购签约日期: </span>} type="datetime" dateOnly={true} value={moment().format("YYYY-MM-DD")} endDate={moment()} name="ord_time" grid={1} required></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"contract.png"}/> 销售合同号: </span>} type="text" name="sale_contract" grid={1} required></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-gys.png"}/> 供应商: </span>} onChange={this.reloadProducts} ref="provider" type="autocomplete" data={[]} name="prov_id" grid={1} required></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-comment.png"}/> 备注: </span>} type="textarea" name="ord_comment" grid={1}></FormControl>
                     </Form>
                 </Tile>
 

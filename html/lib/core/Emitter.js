@@ -105,6 +105,15 @@ class Emitter {
 
     /**
      * 事件监听
+     * @param args {...}
+     * @returns {*}
+     */
+    un(...args) {
+        return this._removeListener.apply(this, args);
+    }
+
+    /**
+     * 事件监听
      * @method _addListener
      * @param type
      * @param listener

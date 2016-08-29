@@ -25,6 +25,7 @@
   font-size: 12px;
   padding: 3px 20px;
   border-bottom: 1px solid #ccc;
+  text-align: left;
 }
 .cm-datetime .tools-info .date-range-shortcut {
   margin-left: 10px;

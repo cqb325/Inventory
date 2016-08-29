@@ -71,9 +71,11 @@ let Page = React.createClass({
 
     submitFund(){
         let fund = this.refs.fund_ele.getValue();
+        let comment = this.refs.fund_comment.getValue();
         let params = {
             ord_no: this.props.params.ord_no,
-            fund: fund
+            fund: fund,
+            comment: comment
         };
         let orderIn = this.state.order;
         ExportService.payFund(params, orderIn, (ret)=>{
@@ -143,6 +145,7 @@ let Page = React.createClass({
             <Form ref="form" method="custom"  useDefaultSubmitBtn={false} submit={this.submitFund}>
                 <FormControl label="收款金额: " ref="fund_ele" type="number" name="fund" {...props} required rules={{min: 1}}
                     messages={{min: "收款金额需大于1"}}/>
+                <FormControl label="付款情况: " ref="fund_comment" type="textarea" name="comment" />
             </Form>
         );
     },
@@ -225,8 +228,10 @@ let Page = React.createClass({
         ];
 
         let fundHeader = [
-            {name: "time", text: "付款时间", width: "50%"},
-            {name: "fund", text: "付款金额(元)", width: "50%"}
+            {name: "time", text: "收款时间", width: "25%"},
+            {name: "fund", text: "收款金额(元)", width: "25%"},
+            {name: "remain", text: "未收款金额(元)", width: "25%"},
+            {name: "comment", text: "收款情况", width: "25%"}
         ];
 
         let details_footers = {

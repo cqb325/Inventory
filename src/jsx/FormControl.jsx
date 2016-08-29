@@ -469,7 +469,7 @@ FormControl.propTypes = {
      * @attribute label
      * @type {String}
      */
-    label: PropTypes.string,
+    label: PropTypes.any,
     /**
      * 文本框的提示
      * @attribute placeholder

@@ -136,8 +136,9 @@ let List = React.createClass({
 
             let deleteBtn = <Button key="1" theme="success" className="ml-10" icon="trash" flat={true} onClick={scope.showConfirm.bind(scope, row.ord_no)}>删除</Button>;
             let payBtn = <Button key="2" theme="success" className="ml-10" icon="cc-visa" flat={true} href={"#import_payFund/"+row.ord_no}>付款</Button>;
-            let sendBtn = <Button key="3" theme="success" className="ml-10" icon="cc-visa" flat={true} onClick={scope.sendConfirm.bind(scope, row.ord_no)}>已发货</Button>;
-            let importBtn = <Button key="4" theme="success" className="ml-10" icon="cc-visa" flat={true} onClick={scope.importConfirm.bind(scope, row.ord_no)}>已入库</Button>;
+            let sendBtn = <Button key="3" theme="success" className="ml-10" icon="truck" flat={true} onClick={scope.sendConfirm.bind(scope, row.ord_no)}>已发货</Button>;
+            let importBtn = <Button key="4" theme="success" className="ml-10" icon="archive" flat={true} onClick={scope.importConfirm.bind(scope, row.ord_no)}>已入库</Button>;
+            let detailBtn = <Button key="2" theme="success" className="ml-10" icon="bars" flat={true} href={"#import_payFund/"+row.ord_no}>查看</Button>;
             if(row.ord_status < Format.ORDER_STATUS.FUND){
                 btns.push(deleteBtn);
                 btns.push(payBtn);
@@ -148,10 +149,12 @@ let List = React.createClass({
                 btns = [payBtn];
             }else if(row.ord_status == Format.ORDER_STATUS.FUNDED){
                 btns.push(sendBtn);
+                btns.push(detailBtn);
             }else if(row.ord_status == Format.ORDER_STATUS.SEND){
                 btns.push(importBtn);
+                btns.push(detailBtn);
             }else if(row.ord_status == Format.ORDER_STATUS.IMPORTED){
-                btns = null;
+                btns.push(detailBtn);
             }
             return (<span>
                 {btns}
@@ -171,11 +174,30 @@ let List = React.createClass({
             return statusFormatData[value];
         };
 
+        let fundedFormat = function(value, column, row){
+            let remain = row.ord_fund_remain || 0;
+            return row.ord_fund - row.ord_fund_remain;
+        };
+
+        let fundedPercentFormat = function(value, column, row){
+            let remain = row.ord_fund_remain || 0;
+            let funded = row.ord_fund - row.ord_fund_remain;
+            let ret = Math.round(funded / row.ord_fund * 100);
+            return ret + "%";
+        };
+
         let header = [
-            {name: "ord_contract", text: "合同编号"},
-            {name: "ord_time", text: "合同签订时间", format: "DateTimeFormat"},
+            {name: "ord_contract", text: "采购合同编号"},
+            {name: "sale_contract", text: "销售合同编号"},
+            {name: "ord_time", text: "签订日期", format: "DateFormat"},
             {name: "prov_name", text: "供应商"},
-            {name: "ord_fund", text: "金额"},
+            {name: "ord_fund", text: "金额(元)"},
+            {name: "ord_funded", text: "付款(元)", format: fundedFormat},
+            {name: "ord_fund_remain", text: "余款(元)"},
+            {name: "fund_percent", text: "付款比例", format: fundedPercentFormat},
+            {name: "send_time", text: "发货日期", format: "DateFormat"},
+            {name: "arrival_time", text: "入库日期", format: "DateFormat"},
+            {name: "voucher", text: "凭证号"},
             {name: "ord_status", text: "合同状态", format: statusFormat},
             {name: "ops", text: "操作", format: btnFormat}
         ];
@@ -201,7 +223,7 @@ let List = React.createClass({
                     </Label>
 
                     <Label className="text-right" grid={0.7}>
-                        <FormControl ref="dateRange" label="时间: " type="daterange" endDate={moment()}></FormControl>
+                        <FormControl ref="dateRange" label="时间: " type="daterange" endDate={moment()} clear="true"></FormControl>
                         <FormControl ref="ord_contract" label="合同号: " type="text"></FormControl>
                         <FormControl ref="ord_status" label="状态: " type="select" data={statusData} className="text-left"
                                      placeholder="选择合同状态" choiceText="选择合同状态" hasEmptyOption="true"></FormControl>

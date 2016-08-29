@@ -63,7 +63,6 @@ module.exports = {
     addOrder(params, importParams, callback){
         params.ord_no = uuid.v1();
         params.ord_status = 0;
-        params.ord_time = new Date();
         params.ord_fund_remain = params.ord_fund;
         params.order_type = Format.ORDER_TYPE.IN;
 
@@ -109,6 +108,7 @@ module.exports = {
                 callback(null);
             }
         }).catch(function(error){
+            console.log(error);
             callback(null);
         });
     },
@@ -139,6 +139,7 @@ module.exports = {
             if(remain == 0){
                 if(order.ord_status < Format.ORDER_STATUS.FUNDED) {
                     orderParam.ord_status = Format.ORDER_STATUS.FUNDED;
+                    orderParam.fund_time = new Date();
                 }
             }else{
                 if(order.ord_status < Format.ORDER_STATUS.FUND) {
@@ -171,7 +172,7 @@ module.exports = {
     /**
      *
      */
-    setStatus(ord_no, status, callback){
+    setStatus(ord_no, status, time, callback){
         //已入库的话更新库存信息
         if(status == Format.ORDER_STATUS.SEND){
             let p = new Promise((resolve)=> {
@@ -184,21 +185,29 @@ module.exports = {
                     }
                 });
             }).then((sta)=>{
-                this.updateStatus(ord_no, sta, callback);
+                this.updateStatus(ord_no, sta, time, callback);
             });
         }else if(status == Format.ORDER_STATUS.IMPORTED){
             StockService.addStockByOrder(ord_no, ()=>{
-                this.updateStatus(ord_no, status, callback);
+                this.updateStatus(ord_no, status, time, callback);
             });
         }else {
-            this.updateStatus(ord_no, status, callback);
+            this.updateStatus(ord_no, status, time, callback);
         }
     },
 
-    updateStatus(ord_no, status, callback){
-        Orders.update({
+    updateStatus(ord_no, status, time, callback){
+        let param = {
             ord_status: status
-        }, {where: {ord_no: ord_no}}).then(function (ret) {
+        };
+
+        if(status == Format.ORDER_STATUS.IMPORTED){
+            param.arrival_time = time;
+        }
+        if(status == Format.ORDER_STATUS.SEND){
+            param.send_time = time;
+        }
+        Orders.update(param, {where: {ord_no: ord_no}}).then(function (ret) {
             callback(true);
         }).catch(function (error) {
             console.log(error);
@@ -213,6 +222,25 @@ module.exports = {
         Orders.destroy({where: {ord_no: ord_no}}).then(function(){
             callback(true);
         }).catch(function(error){
+            callback(false);
+        });
+    },
+
+    setVoucher(ord_no, voucher, callback){
+        Orders.update({
+            voucher: voucher
+        }, {where: {ord_no: ord_no}}).then(function (ret) {
+            callback(true);
+        }).catch(function (error) {
+            callback(false);
+        });
+    },
+
+    saveInvoice(ord_no, params, callback){
+        Orders.update(params, {where: {ord_no: ord_no}}).then(function (ret) {
+            callback(true);
+        }).catch(function (error) {
+            console.log(error);
             callback(false);
         });
     }

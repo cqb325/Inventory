@@ -56,6 +56,7 @@ class Button extends BaseComponent {
         if (this.props.onClick) {
             this.props.onClick();
         }
+        this.emit("click");
         if (this.props.once) {
             this.disable();
         }

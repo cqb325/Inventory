@@ -18,6 +18,9 @@ module.exports = function(sequelize, DataTypes){
         fund_time           : DataTypes.DATE,
         voucher             : DataTypes.STRING,
         invoice_start       : DataTypes.DATE,
-        invoice_arrival       : DataTypes.DATE
+        invoice_arrival     : DataTypes.DATE,
+        sign_user           : DataTypes.STRING,
+        invoice_tracking    : DataTypes.STRING,
+        send_tracking       : DataTypes.STRING
     });
 };

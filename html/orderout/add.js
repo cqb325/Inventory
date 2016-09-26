@@ -7,6 +7,8 @@ const Tile = require('../Tile');
 const Table = require('../lib/Table');
 const Input = require('../lib/Input');
 const Select = require('../lib/Select');
+const DateTime = require('../lib/DateTime');
+const moment = require('../lib/moment');
 const Form = require('../lib/Form');
 const FormControl = require('../lib/FormControl');
 const MessageBox = require('../lib/MessageBox');
@@ -141,7 +143,9 @@ let Page = React.createClass({
             ord_contract: formItems["ord_contract"].ref.getValue(),
             prov_id: formItems["cli_id"].ref.getValue(),
             ord_comment: formItems["ord_comment"].ref.getValue(),
-            ord_fund: total
+            ord_fund: total,
+            sign_user: formItems["sign_user"].ref.getValue(),
+            ord_time: formItems["ord_time"].ref.getValue()
         };
 
         let import_table_Data = this.refs.import_table.state.data;
@@ -255,15 +259,6 @@ let Page = React.createClass({
                         null,
                         '出库'
                     )
-                ),
-                React.createElement(
-                    Label,
-                    { grid: 0.7, className: 'text-right' },
-                    React.createElement(
-                        Button,
-                        { icon: 'mail-reply', theme: 'info', raised: true, href: 'javascript:history.go(-1)' },
-                        '返 回'
-                    )
                 )
             ),
             React.createElement(
@@ -346,9 +341,36 @@ let Page = React.createClass({
                 React.createElement(
                     Form,
                     { ref: 'form', method: 'custom', layout: 'stack', useDefaultSubmitBtn: false },
-                    React.createElement(FormControl, { label: '合同号: ', type: 'text', name: 'ord_contract', grid: 1, required: true }),
-                    React.createElement(FormControl, { label: '客户: ', ref: 'client', type: 'autocomplete', data: [], name: 'cli_id', grid: 1, required: true }),
-                    React.createElement(FormControl, { label: '备注: ', type: 'textarea', name: 'ord_comment', grid: 1 })
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
+                            React.createElement('img', { src: IMGPATH + "contract.png" }),
+                            ' 销售合同号: '
+                        ), type: 'text', name: 'ord_contract', grid: 1, required: true }),
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
+                            React.createElement('img', { src: IMGPATH + "icon-gys.png" }),
+                            ' 客户: '
+                        ), ref: 'client', type: 'autocomplete', data: [], name: 'cli_id', grid: 1, required: true }),
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
+                            React.createElement('img', { src: IMGPATH + "icon-clock.png" }),
+                            ' 签约日期: '
+                        ), type: 'datetime', dateOnly: true, value: moment().format("YYYY-MM-DD"), endDate: moment(), name: 'ord_time', grid: 1, required: true }),
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
+                            React.createElement('img', { src: IMGPATH + "icon-user.png" }),
+                            ' 签署人: '
+                        ), type: 'text', name: 'sign_user', grid: 1, required: true }),
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
+                            React.createElement('img', { src: IMGPATH + "icon-comment.png" }),
+                            ' 备注: '
+                        ), type: 'textarea', name: 'ord_comment', grid: 1 })
                 )
             ),
             React.createElement(

@@ -380,7 +380,7 @@ let Page = React.createClass({
         let orderIn = this.state.orderIn;
 
         let amountFormat = function (value, column, row) {
-            return value + "(" + row.prod_unit + ")";
+            return value + "(" + Format.unitDataMap[row.prod_unit] + ")";
         };
         let header = [{ name: "prod_name", text: "名称", tip: true }, { name: "prod_price", text: "单价" }, { name: "prod_model", text: "型号" }, { name: "prod_amount", text: "数量", format: amountFormat }, { name: "prod_fund", text: "总价" }];
 

@@ -158,7 +158,7 @@ let List = React.createClass({
             );
             let detailBtn = React.createElement(
                 Button,
-                { key: '2', theme: 'success', className: 'ml-10', icon: 'bars', flat: true, href: "#import_payFund/" + row.ord_no },
+                { key: '5', theme: 'success', className: 'ml-10', icon: 'bars', flat: true, href: "#import_payFund/" + row.ord_no },
                 '查看'
             );
             if (row.ord_status < Format.ORDER_STATUS.FUND) {
@@ -230,7 +230,7 @@ let List = React.createClass({
                     React.createElement(
                         Button,
                         { icon: 'plus', theme: 'success', href: '#import_add' },
-                        '新增入库'
+                        '新采购'
                     )
                 ),
                 React.createElement(

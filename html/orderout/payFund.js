@@ -10,6 +10,7 @@ const Table = require('../lib/Table');
 const Input = require('../lib/Input');
 const Select = require('../lib/Select');
 const Form = require('../lib/Form');
+const DateTime = require('../lib/DateTime');
 const moment = require('../lib/moment');
 const FormControl = require('../lib/FormControl');
 const MessageBox = require('../lib/MessageBox');
@@ -18,6 +19,7 @@ const Format = require('../format');
 const FontIcon = require('../lib/FontIcon');
 const TextArea = require('../lib/TextArea');
 const Dialog = require('../lib/Dialog');
+const OpenDialog = require('../lib/mixins/OpenDialog');
 const ReactRouter = require('react-router');
 const hashHistory = ReactRouter.hashHistory;
 
@@ -28,21 +30,21 @@ const ProductService = require("../services/ProductService");
 let Page = React.createClass({
     displayName: 'Page',
 
-
+    mixins: [OpenDialog],
     getInitialState() {
         return {
-            order: null
+            order: null,
+            refresh: 0
         };
     },
 
     payResult() {
         if (this.refs.tip.getData()) {
-            window.location.reload();
+            //window.location.reload();
+            //hashHistory.replace("export_payFund/"+this.props.params.ord_no);
+            this.loadOrderInfo();
+            this.loadPayFund();
         }
-    },
-
-    showPayDialog() {
-        this.refs.pay_dialog.open();
     },
 
     closeDialog() {
@@ -56,7 +58,7 @@ let Page = React.createClass({
     },
 
     loadOrderInfo() {
-        ExportService.getOrder(this.props.params.ord_no, order => {
+        ExportService.getOrder(this.props.params.ord_no, this.props.params.type, order => {
             this.setState({ order });
         });
     },
@@ -83,6 +85,7 @@ let Page = React.createClass({
         };
         let orderIn = this.state.order;
         ExportService.payFund(params, orderIn, ret => {
+            this.refs.pay_dialog.close();
             if (ret) {
                 this.refs.tip.show("收款成功");
                 this.refs.tip.setData(true);
@@ -103,20 +106,78 @@ let Page = React.createClass({
         let status = 0;
         if (order) {
             status = order.ord_status;
+            data[0] = React.createElement(
+                'span',
+                null,
+                '已签合同',
+                React.createElement('br', null),
+                '(',
+                moment(order.ord_time).format("YYYY-MM-DD"),
+                ')'
+            );
         }
         let status_index = status;
         if (status == 2) {
             data = ["已签合同", "预收款已发货", "已收款", "已收货"];
             status_index = 1;
+            data[1] = React.createElement(
+                'span',
+                null,
+                '预付款已发货',
+                React.createElement('br', null),
+                '(',
+                moment(order.send_time).format("YYYY-MM-DD"),
+                ')'
+            );
         }
         if (status == 3) {
             status_index = 2;
         }
+        if (status >= 3) {
+            data[2] = React.createElement(
+                'span',
+                null,
+                '已付款',
+                React.createElement('br', null),
+                '(',
+                moment(order.fund_time).format("YYYY-MM-DD"),
+                ')'
+            );
+        }
         if (status == 4) {
             status_index = 3;
+            data[3] = React.createElement(
+                'span',
+                null,
+                '已发货',
+                React.createElement('br', null),
+                '(',
+                moment(order.send_time).format("YYYY-MM-DD"),
+                ')'
+            );
+        }
+        if (status >= 4) {
+            data[3] = React.createElement(
+                'span',
+                null,
+                '已发货',
+                React.createElement('br', null),
+                '(',
+                moment(order.send_time).format("YYYY-MM-DD"),
+                ')'
+            );
         }
         if (status == 10) {
             status_index = 4;
+            data[status_index] = React.createElement(
+                'span',
+                null,
+                '已收货',
+                React.createElement('br', null),
+                '(',
+                moment(order.arrival_time).format("YYYY-MM-DD"),
+                ')'
+            );
         }
 
         let eles = data.map((item, index) => {
@@ -162,58 +223,94 @@ let Page = React.createClass({
             { ref: 'form', method: 'custom', useDefaultSubmitBtn: false, submit: this.submitFund },
             React.createElement(FormControl, _extends({ label: '收款金额: ', ref: 'fund_ele', type: 'number', name: 'fund' }, props, { required: true, rules: { min: 1 },
                 messages: { min: "收款金额需大于1" } })),
-            React.createElement(FormControl, { label: '付款情况: ', ref: 'fund_comment', type: 'textarea', name: 'comment' })
+            React.createElement(FormControl, { label: '收款情况: ', ref: 'fund_comment', type: 'textarea', name: 'comment' })
         );
-    },
-
-    showSendDialog() {
-        this.refs.sendTip.show("确认已经发货?");
     },
 
     sendResult(flag) {
         if (flag) {
-            ExportService.setStatus(this.props.params.ord_no, Format.ORDER_STATUS.SEND, ret => {
-                if (ret) {
-                    window.location.reload();
-                } else {
-                    this.refs.tip.show("提交失败");
-                    this.refs.tip.setData(false);
-                }
-            });
+            let isValida = this.refs.send_time.check();
+            let isValidb = this.refs.send_tracking.check();
+            if (isValida && isValidb) {
+                let sendTime = this.refs.send_time.getValue();
+                let send_tracking = this.refs.send_tracking.getValue();
+                ExportService.setSendStatus(this.props.params.ord_no, Format.ORDER_STATUS.SEND, sendTime, send_tracking, ret => {
+                    if (ret) {
+                        this.loadOrderInfo();
+                    } else {
+                        this.refs.tip.show("提交失败");
+                        this.refs.tip.setData(false);
+                    }
+                });
+            } else {
+                return false;
+            }
         }
         return true;
     },
 
-    showImportedDialog() {
-        this.refs.importTip.show("确认对方已经收货?");
-    },
-
     importResult(flag) {
         if (flag) {
-            ExportService.setStatus(this.props.params.ord_no, Format.ORDER_STATUS.IMPORTED, ret => {
-                if (ret) {
-                    window.location.reload();
-                } else {
-                    this.refs.tip.show("提交失败");
-                    this.refs.tip.setData(false);
-                }
-            });
+            let isValid = this.refs.arrival_time.check();
+            if (isValid) {
+                let arrivalTime = this.refs.arrival_time.getValue();
+                ExportService.setStatus(this.props.params.ord_no, Format.ORDER_STATUS.IMPORTED, arrivalTime, ret => {
+                    if (ret) {
+                        this.loadOrderInfo();
+                    } else {
+                        this.refs.tip.show("提交失败");
+                        this.refs.tip.setData(false);
+                    }
+                });
+            } else {
+                return false;
+            }
         }
+        return true;
+    },
+
+    saveVoucher(flag) {
+        if (flag) {
+            let isValid = this.refs.voucher.check();
+            if (isValid) {
+                let voucher = this.refs.voucher.getValue();
+                ExportService.setVoucher(this.props.params.ord_no, voucher, ret => {
+                    if (ret) {
+                        this.loadOrderInfo();
+                    } else {
+                        this.refs.tip.show("提交失败");
+                        this.refs.tip.setData(false);
+                    }
+                });
+            } else {
+                return false;
+            }
+        }
+
         return true;
     },
 
     renderPayButton() {
         let orderIn = this.state.order;
+        let voucherBtn = null;
         if (orderIn) {
+            if (!orderIn.voucher) {
+                voucherBtn = React.createElement(
+                    Button,
+                    { theme: 'success', className: 'ml-20', raised: true, icon: 'paypal', ref: 'btn_2', 'data-toggle': 'dialog', 'data-target': 'voucherTip' },
+                    '填写凭证号'
+                );
+            }
             if (orderIn.ord_fund_remain > 0) {
                 return React.createElement(
                     Label,
                     { className: 'mt-20 text-center mb-30' },
                     React.createElement(
                         Button,
-                        { theme: 'success', raised: true, icon: 'cc-visa', onClick: this.showPayDialog },
+                        { theme: 'success', raised: true, icon: 'cc-visa', ref: 'btn_4', 'data-toggle': 'dialog', 'data-target': 'pay_dialog' },
                         '收 款'
-                    )
+                    ),
+                    voucherBtn
                 );
             } else {
                 if (orderIn.ord_status == Format.ORDER_STATUS.FUNDED) {
@@ -222,9 +319,10 @@ let Page = React.createClass({
                         { className: 'mt-20 text-center mb-30' },
                         React.createElement(
                             Button,
-                            { theme: 'success', raised: true, icon: 'cc-visa', onClick: this.showSendDialog },
+                            { theme: 'success', raised: true, icon: 'cc-visa', ref: 'btn_5', 'data-toggle': 'dialog', 'data-target': 'sendTip' },
                             '已发货'
-                        )
+                        ),
+                        voucherBtn
                     );
                 } else if (orderIn.ord_status == Format.ORDER_STATUS.SEND) {
                     return React.createElement(
@@ -232,16 +330,57 @@ let Page = React.createClass({
                         { className: 'mt-20 text-center mb-30' },
                         React.createElement(
                             Button,
-                            { theme: 'success', raised: true, icon: 'cc-visa', onClick: this.showImportedDialog },
+                            { theme: 'success', raised: true, icon: 'cc-visa', ref: 'btn_3', 'data-toggle': 'dialog', 'data-target': 'importTip' },
                             '已收货'
-                        )
+                        ),
+                        voucherBtn
                     );
                 } else {
-                    return React.createElement(Label, { className: 'mt-20 text-center mb-30' });
+                    return React.createElement(
+                        Label,
+                        { className: 'mt-20 text-center mb-30' },
+                        voucherBtn
+                    );
                 }
             }
         }
         return React.createElement(Label, { className: 'mt-20 text-center mb-30' });
+    },
+
+    initInvoiceData() {
+        let order = this.state.order;
+        if (order) {
+            let start = order.invoice_start ? moment(order.invoice_start).format("YYYY-MM-DD") : "";
+            this.refs.invoice_start.setValue(start);
+            let invoice_tracking = order.invoice_tracking ? order.invoice_tracking : "";
+            this.refs.invoice_tracking.setValue(invoice_tracking);
+        }
+    },
+
+    saveInvoice(flag) {
+        if (flag) {
+            let invoice_start = this.refs.invoice_start.getValue();
+            let invoice_tracking = this.refs.invoice_tracking.getValue();
+            if (invoice_start || invoice_tracking) {
+                let params = {};
+                if (invoice_start) {
+                    params["invoice_start"] = invoice_start;
+                }
+                if (invoice_tracking) {
+                    params["invoice_tracking"] = invoice_tracking;
+                }
+
+                ExportService.saveInvoice(this.props.params.ord_no, params, ret => {
+                    if (ret) {
+                        this.loadOrderInfo();
+                    } else {
+                        this.refs.tip.show("提交失败");
+                        this.refs.tip.setData(false);
+                    }
+                });
+            }
+        }
+        return true;
     },
 
     render() {
@@ -249,7 +388,7 @@ let Page = React.createClass({
         let orderIn = this.state.order;
 
         let amountFormat = function (value, column, row) {
-            return value + "(" + row.prod_unit + ")";
+            return value + "(" + Format.unitDataMap[row.prod_unit] + ")";
         };
         let header = [{ name: "prod_name", text: "名称", tip: true }, { name: "price", text: "单价" }, { name: "prod_model", text: "型号" }, { name: "prod_amount", text: "数量", format: amountFormat }, { name: "prod_fund", text: "总价" }];
 
@@ -277,13 +416,15 @@ let Page = React.createClass({
                     Label,
                     { grid: 0.5 },
                     '总金额: ',
-                    orderIn ? orderIn.ord_fund : "--"
+                    orderIn ? orderIn.ord_fund : "--",
+                    '元'
                 ),
                 React.createElement(
                     Label,
                     { grid: 0.5 },
                     '剩余金额: ',
-                    orderIn ? orderIn.ord_fund_remain : "--"
+                    orderIn ? orderIn.ord_fund_remain : "--",
+                    '元'
                 ),
                 React.createElement(
                     'div',
@@ -291,9 +432,65 @@ let Page = React.createClass({
                     this.renderForm()
                 )
             ),
+            React.createElement(
+                Dialog,
+                { title: '填写凭证号', ref: 'voucherTip', grid: 0.3, onConfirm: this.saveVoucher },
+                React.createElement(
+                    'div',
+                    { className: 'mt-20' },
+                    React.createElement(
+                        FormControl,
+                        { label: '凭证号: ', className: 'flex', ref: 'voucher', name: 'voucher', required: true },
+                        React.createElement(Input, { type: 'text', className: 'auto' })
+                    )
+                )
+            ),
+            React.createElement(
+                Dialog,
+                { title: '已发货', ref: 'sendTip', grid: 0.3, onConfirm: this.sendResult },
+                React.createElement(
+                    'div',
+                    { className: 'mt-20' },
+                    React.createElement(
+                        FormControl,
+                        { label: '发货时间: ', className: 'flex vertical-center', ref: 'send_time', name: 'sendTime', required: true },
+                        React.createElement(DateTime, { dateOnly: true, className: 'auto' })
+                    ),
+                    React.createElement(
+                        FormControl,
+                        { label: '发货单号: ', className: 'flex', ref: 'send_tracking', name: 'send_tracking', required: true },
+                        React.createElement(Input, { className: 'auto' })
+                    )
+                )
+            ),
+            React.createElement(
+                Dialog,
+                { title: '已收货', ref: 'importTip', grid: 0.3, onConfirm: this.importResult },
+                React.createElement(
+                    'div',
+                    { className: 'mt-20' },
+                    React.createElement(FormControl, { label: '收货时间: ', ref: 'arrival_time', type: 'datetime', dateOnly: true, required: true })
+                )
+            ),
+            React.createElement(
+                Dialog,
+                { title: '修改发票信息', ref: 'invoiceTip', grid: 0.3, onConfirm: this.saveInvoice, onOpen: this.initInvoiceData },
+                React.createElement(
+                    'div',
+                    { className: 'mt-20' },
+                    React.createElement(
+                        FormControl,
+                        { label: '开票时间: ', className: 'flex vertical-center', ref: 'invoice_start', name: 'invoice_start' },
+                        React.createElement(DateTime, { dateOnly: true, className: 'auto' })
+                    ),
+                    React.createElement(
+                        FormControl,
+                        { label: '快递单号: ', className: 'flex', ref: 'invoice_tracking', name: 'invoice_tracking' },
+                        React.createElement(Input, { className: 'auto' })
+                    )
+                )
+            ),
             React.createElement(MessageBox, { title: '提示', ref: 'tip', confirm: this.payResult }),
-            React.createElement(MessageBox, { title: '提示', type: 'confirm', ref: 'sendTip', confirm: this.sendResult }),
-            React.createElement(MessageBox, { title: '提示', type: 'confirm', ref: 'importTip', confirm: this.importResult }),
             React.createElement(
                 Label,
                 { className: 'searchTools mt-30 mb-20', component: 'div' },
@@ -330,62 +527,135 @@ let Page = React.createClass({
                     { grid: 1, className: 'mt-30' },
                     React.createElement(
                         Label,
-                        { grid: 1, className: 'mt-10' },
+                        { grid: 0.5, className: 'mt-10' },
                         React.createElement(
-                            'span',
-                            null,
-                            React.createElement('img', { src: IMGPATH + "contract.png" }),
-                            ' 合同号: '
-                        ),
-                        React.createElement(
-                            'span',
-                            { className: 'ml-10 underline' },
-                            orderIn ? orderIn.ord_contract : ""
+                            'div',
+                            { className: 'flex' },
+                            React.createElement(
+                                'span',
+                                { className: 'details-label' },
+                                React.createElement('img', { src: IMGPATH + "contract.png" }),
+                                ' 合同号: '
+                            ),
+                            React.createElement(
+                                'span',
+                                { className: 'ml-10 underline auto' },
+                                orderIn ? orderIn.ord_contract : ""
+                            )
                         )
                     ),
                     React.createElement(
                         Label,
-                        { grid: 1, className: 'mt-10' },
+                        { grid: 0.5, className: 'mt-10' },
                         React.createElement(
-                            'span',
-                            null,
-                            React.createElement('img', { src: IMGPATH + "icon-gys.png" }),
-                            ' 客户: '
-                        ),
-                        React.createElement(
-                            'span',
-                            { className: 'ml-10 underline' },
-                            orderIn ? orderIn.cli_name : ""
+                            'div',
+                            { className: 'flex' },
+                            React.createElement(
+                                'span',
+                                { className: 'details-label' },
+                                React.createElement('img', { src: IMGPATH + "icon-gys.png" }),
+                                ' 客户: '
+                            ),
+                            React.createElement(
+                                'span',
+                                { className: 'ml-10 underline auto' },
+                                orderIn ? orderIn.cli_name || orderIn.staff_name : ""
+                            )
                         )
                     ),
                     React.createElement(
                         Label,
-                        { grid: 1, className: 'mt-10' },
+                        { grid: 0.5, className: 'mt-10' },
                         React.createElement(
-                            'span',
-                            null,
-                            React.createElement('img', { src: IMGPATH + "icon-clock.png" }),
-                            ' 下单时间: '
-                        ),
-                        React.createElement(
-                            'span',
-                            { className: 'ml-10 underline' },
-                            orderIn ? moment(orderIn.ord_time).format("YYYY-MM-DD HH:mm:ss") : ""
+                            'div',
+                            { className: 'flex' },
+                            React.createElement(
+                                'span',
+                                { className: 'details-label' },
+                                React.createElement('img', { src: IMGPATH + "icon-clock.png" }),
+                                ' 签单日期: '
+                            ),
+                            React.createElement(
+                                'span',
+                                { className: 'ml-10 underline auto' },
+                                orderIn ? moment(orderIn.ord_time).format("YYYY-MM-DD") : ""
+                            )
                         )
                     ),
                     React.createElement(
                         Label,
-                        { grid: 1, className: 'mt-10' },
+                        { grid: 0.5, className: 'mt-10' },
                         React.createElement(
-                            'span',
-                            null,
-                            React.createElement('img', { src: IMGPATH + "icon-comment.png" }),
-                            ' 备注: '
-                        ),
+                            'div',
+                            { className: 'flex' },
+                            React.createElement(
+                                'span',
+                                { className: 'details-label' },
+                                React.createElement('img', { src: IMGPATH + "icon-user.png" }),
+                                ' 签署人: '
+                            ),
+                            React.createElement(
+                                'span',
+                                { className: 'ml-10 underline auto' },
+                                orderIn ? orderIn.sign_user : ""
+                            )
+                        )
+                    ),
+                    React.createElement(
+                        Label,
+                        { grid: 0.5, className: 'mt-10' },
                         React.createElement(
-                            'span',
-                            { className: 'ml-10 underline' },
-                            orderIn ? orderIn.ord_comment : ""
+                            'div',
+                            { className: 'flex' },
+                            React.createElement(
+                                'span',
+                                { className: 'details-label' },
+                                React.createElement('img', { src: IMGPATH + "icon-pz.png" }),
+                                ' 凭证号: '
+                            ),
+                            React.createElement(
+                                'span',
+                                { className: 'ml-10 underline auto' },
+                                orderIn ? orderIn.voucher : ""
+                            )
+                        )
+                    ),
+                    React.createElement(
+                        Label,
+                        { grid: 0.5, className: 'mt-10' },
+                        React.createElement(
+                            'div',
+                            { className: 'flex' },
+                            React.createElement(
+                                'span',
+                                { className: 'details-label' },
+                                React.createElement('img', { src: IMGPATH + "icon-qrcode.png" }),
+                                ' 发货单号: '
+                            ),
+                            React.createElement(
+                                'span',
+                                { className: 'ml-10 underline auto' },
+                                orderIn ? orderIn.send_tracking : ""
+                            )
+                        )
+                    ),
+                    React.createElement(
+                        Label,
+                        { grid: 0.5, className: 'mt-10' },
+                        React.createElement(
+                            'div',
+                            { className: 'flex' },
+                            React.createElement(
+                                'span',
+                                { className: 'details-label' },
+                                React.createElement('img', { src: IMGPATH + "icon-comment.png" }),
+                                ' 备注: '
+                            ),
+                            React.createElement(
+                                'span',
+                                { className: 'ml-10 underline auto' },
+                                orderIn ? orderIn.ord_comment : ""
+                            )
                         )
                     )
                 )
@@ -438,6 +708,66 @@ let Page = React.createClass({
                             ' 收款记录'
                         ) },
                     React.createElement(Table, { ref: 'fundTable', header: fundHeader, data: [], striped: true, className: 'text-center' })
+                )
+            ),
+            React.createElement(
+                Label,
+                { grid: 1, className: 'mt-20' },
+                React.createElement(
+                    Tile,
+                    { header: React.createElement(
+                            'span',
+                            { className: 'flex vertical-center' },
+                            React.createElement('img', { src: IMGPATH + "icon-fp.png" }),
+                            ' 发票信息',
+                            React.createElement(
+                                'span',
+                                { className: 'auto text-right' },
+                                React.createElement(
+                                    Button,
+                                    { icon: 'edit', theme: 'success', className: 'editBtn', ref: 'btn_1', 'data-toggle': 'dialog', 'data-target': 'invoiceTip' },
+                                    '编辑'
+                                )
+                            )
+                        ) },
+                    React.createElement(
+                        Label,
+                        { grid: 0.5, className: 'mt-10' },
+                        React.createElement(
+                            'div',
+                            { className: 'flex' },
+                            React.createElement(
+                                'span',
+                                { className: 'details-label' },
+                                React.createElement('img', { src: IMGPATH + "icon-clock.png" }),
+                                ' 开票时间: '
+                            ),
+                            React.createElement(
+                                'span',
+                                { className: 'ml-10 auto' },
+                                orderIn && orderIn.invoice_start ? moment(orderIn.invoice_start).format("YYYY-MM-DD") : ""
+                            )
+                        )
+                    ),
+                    React.createElement(
+                        Label,
+                        { grid: 0.5, className: 'mt-10' },
+                        React.createElement(
+                            'div',
+                            { className: 'flex' },
+                            React.createElement(
+                                'span',
+                                { className: 'details-label' },
+                                React.createElement('img', { src: IMGPATH + "icon-qrcode.png" }),
+                                ' 快递单号: '
+                            ),
+                            React.createElement(
+                                'span',
+                                { className: 'ml-10 auto' },
+                                orderIn && orderIn.invoice_tracking ? orderIn.invoice_tracking : ""
+                            )
+                        )
+                    )
                 )
             ),
             this.renderPayButton()

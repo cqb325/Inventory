@@ -8,6 +8,7 @@ module.exports = function(sequelize, DataTypes){
         fund                     : DataTypes.FLOAT,
         remain                   : DataTypes.FLOAT,
         time                     : DataTypes.DATE,
-        comment                  : DataTypes.STRING
+        comment                  : DataTypes.STRING,
+        sign                     : DataTypes.STRING
     });
 };

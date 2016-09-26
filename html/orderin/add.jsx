@@ -26,7 +26,9 @@ let Page = React.createClass({
         this.products = {};
         this.funds = {};
         this.counts = {};
-        return {};
+        this.prices = {};
+        return {
+        };
     },
 
     payFund(){
@@ -38,6 +40,7 @@ let Page = React.createClass({
 
     componentDidMount(){
         this.loadAllProviders();
+        this.reloadProducts();
     },
 
     loadAllProviders(){
@@ -46,8 +49,8 @@ let Page = React.createClass({
         });
     },
 
-    reloadProducts(value, item){
-        ProductService.getAll(value, (products)=>{
+    reloadProducts(){
+        ProductService.getAll((products)=>{
             if(products){
                 products.forEach((product)=>{
                     this.products[product.prod_id] = product;
@@ -90,6 +93,7 @@ let Page = React.createClass({
         this.refs.table.setData(table_Data);
 
         delete this.funds[row.prod_id];
+        delete this.prices[row.prod_id];
         delete this.counts[row.prod_id];
 
         window.setTimeout(()=>{
@@ -99,7 +103,9 @@ let Page = React.createClass({
 
     updateFund(count, row){
         let fundEle = this.funds[row.prod_id];
-        let fund = count * row.prod_price;
+        let price = this.prices[row.prod_id].getValue() || 0;
+        count = this.counts[row.prod_id].getValue() || 0;
+        let fund = count * price;
         fundEle.setValue(fund);
 
         window.setTimeout(()=>{
@@ -140,7 +146,8 @@ let Page = React.createClass({
             ord_comment: formItems["ord_comment"].ref.getValue(),
             ord_fund: total,
             sale_contract: formItems["sale_contract"].ref.getValue(),
-            ord_time: formItems["ord_time"].ref.getValue()
+            ord_time: formItems["ord_time"].ref.getValue(),
+            order_type: formItems["order_type"].ref.getValue()
         };
 
         let import_table_Data = this.refs.import_table.state.data;
@@ -148,12 +155,13 @@ let Page = React.createClass({
         let prod_params = [];
         import_table_Data.forEach((item)=>{
             let prod_amount = this.counts[item.prod_id].getValue();
+            let prod_price = this.prices[item.prod_id].getValue();
             let prod_fund = this.funds[item.prod_id].getValue();
             prod_params.push({
                 prod_id: item.prod_id,
                 prod_amount: prod_amount,
                 prod_fund: prod_fund,
-                prod_price: item.prod_price
+                prod_price: prod_price
             });
         });
 
@@ -179,11 +187,15 @@ let Page = React.createClass({
         };
 
         let countFormat = function(value, column, row){
-            return <span><FormControl ref={(ref)=>{scope.counts[row.prod_id] = ref}} name="count" type="number" onChange={(avalue)=>{scope.updateFund(avalue, row)}} rules={{required: true}} grid={0.6}/>{Format.unitDataMap[row.prod_unit]}</span>
+            return <span><FormControl style={{width: "80px"}} ref={(ref)=>{scope.counts[row.prod_id] = ref}} name="count" type="number" onChange={(avalue)=>{scope.updateFund(avalue, row)}} rules={{required: true}} grid={0.6}/>{Format.unitDataMap[row.prod_unit]}</span>
         };
 
         let fundFormat = function(value, column, row){
-            return <span><FormControl ref={(ref)=>{scope.funds[row.prod_id] = ref}} name="fund" type="number" grid={0.7}/>元</span>
+            return <span><FormControl style={{width: "80px"}} ref={(ref)=>{scope.funds[row.prod_id] = ref}} name="fund" type="number" grid={0.7}/>元</span>
+        };
+
+        let priceFormat = function(value, column, row){
+            return <span><FormControl style={{width: "80px"}} ref={(ref)=>{scope.prices[row.prod_id] = ref}} name="price" onChange={(avalue)=>{scope.updateFund(avalue, row)}} rules={{required: true}} type="number" grid={0.7}/>元</span>
         };
 
         let header = [
@@ -194,12 +206,20 @@ let Page = React.createClass({
         ];
         let header2 = [
             {name: "prod_name", text: "名称", tip: true},
-            {name: "prod_price", text: "单价"},
+            {name: "prod_price", text: "单价", format: priceFormat},
             {name: "prod_model", text: "型号"},
             {name: "prod_num", text: "数量", format: countFormat},
             {name: "prod_fund", text: "总价", format: fundFormat},
             {name: "op", text: "操作", format: btnFormat2}
         ];
+
+        let orderTypes = [];
+        for(let i in Format.ORDER_TYPE_IN_MAP){
+            orderTypes.push({
+                id: i,
+                text: Format.ORDER_TYPE_IN_MAP[i]
+            });
+        }
         return (
             <div className="main-container">
                 <MessageBox title="提示" ref="tip" confirm={this.payFund}/>
@@ -227,21 +247,23 @@ let Page = React.createClass({
                     </ul>
 
                     <Form ref="form" method="custom" layout="stack" useDefaultSubmitBtn={false} className="mt-20">
+                        <FormControl label={<span><img src={IMGPATH+"icon-gys.png"}/> 类型: </span>} ref="order_type" type="select" data={orderTypes} name="order_type" grid={1} required></FormControl>
                         <FormControl label={<span><img src={IMGPATH+"contract.png"}/> 采购合同号: </span>} type="text" name="ord_contract" grid={1} required></FormControl>
                         <FormControl label={<span><img src={IMGPATH+"icon-clock.png"}/> 采购签约日期: </span>} type="datetime" dateOnly={true} value={moment().format("YYYY-MM-DD")} endDate={moment()} name="ord_time" grid={1} required></FormControl>
                         <FormControl label={<span><img src={IMGPATH+"contract.png"}/> 销售合同号: </span>} type="text" name="sale_contract" grid={1} required></FormControl>
-                        <FormControl label={<span><img src={IMGPATH+"icon-gys.png"}/> 供应商: </span>} onChange={this.reloadProducts} ref="provider" type="autocomplete" data={[]} name="prov_id" grid={1} required></FormControl>
+                        <FormControl label={<span><img src={IMGPATH+"icon-gys.png"}/> 供应商: </span>} ref="provider" type="autocomplete" data={[]} name="prov_id" grid={1} required></FormControl>
+
                         <FormControl label={<span><img src={IMGPATH+"icon-comment.png"}/> 备注: </span>} type="textarea" name="ord_comment" grid={1}></FormControl>
                     </Form>
                 </Tile>
 
                 <Label grid={0.45} style={{"verticalAlign": "top"}}>
-                    <Tile header="选择产品" >
+                    <Tile header="选择产品" contentStyle={{"maxHeight": "500px", "overflow": "auto"}}>
                         <Table ref="table" header={header} data={[]} striped={true} className="text-center"/>
                     </Tile>
                 </Label>
                 <Label grid={{width: 0.54, offset: 0.01}}>
-                    <Tile header="入库产品" >
+                    <Tile header="入库产品" contentStyle={{"maxHeight": "500px", "overflow": "auto"}}>
                         <Table ref="import_table" header={header2} data={[]} striped={true} className="text-center"/>
                     </Tile>
                     <span>总价: <span ref="total"></span>元</span>

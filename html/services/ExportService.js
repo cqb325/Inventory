@@ -60,12 +60,68 @@ module.exports = {
         });
     },
 
+    getInnerBorrowPageList(params, callback){
+        let pageNum = params.pageNum || 1;
+        let pageSize = params.pageSize || 15;
+        let offset = (pageNum - 1) * pageSize;
+
+        params.staff_name = params.staff_name ? params.staff_name : "";
+        let param = ["%" + (params.staff_name) + "%", Format.ORDER_TYPE.INNER_BORROW];
+
+        let sql = "select a.*,b.staff_name from orders a, staff b where b.staff_name like ? and b.staff_id=a.prov_id and a.order_type=? ";
+        if(params.startDate){
+            sql += " and a.ord_time >= ? ";
+            param.push(params.startDate+" 00:00:00");
+        }
+        if(params.endDate){
+            sql += " and a.ord_time <= ? ";
+            param.push(params.endDate+" 23:59:59");
+        }
+
+        let count_sql = "select count(*) as count from ( "+sql+" ) t";
+        db.query(count_sql, {
+            raw: true,
+            type: db.QueryTypes.SELECT,
+            replacements: param
+        }).then(function (ret) {
+            let count = ret[0].count;
+            sql += " order by ord_time desc LIMIT ? OFFSET ?";
+            param.push(pageSize);
+            param.push(offset);
+            db.query(sql, {raw: true, type: db.QueryTypes.SELECT, replacements: param})
+                .then(function (ret) {
+                    let data = {
+                        total: count,
+                        pageNum: pageNum,
+                        pageSize: pageSize,
+                        data: ret
+                    };
+
+                    callback(data);
+                });
+        });
+    },
+
     addOrder(params, importParams, callback){
         params.ord_no = uuid.v1();
         params.ord_status = 0;
-        params.ord_time = new Date();
         params.ord_fund_remain = params.ord_fund;
         params.order_type = Format.ORDER_TYPE.OUT;
+
+        Orders.build(params).save().then((ret)=>{
+            this.addProducts(ret, importParams, callback);
+        }).catch(function(error) {
+            callback(false);
+        });
+    },
+
+    borrow(params, importParams, callback){
+        params.ord_no = uuid.v1();
+        params.sale_contract = uuid.v1();
+        params.ord_status = Format.ORDER_STATUS.FUNDED;
+        params.ord_fund_remain = params.ord_fund;
+        params.order_type = Format.ORDER_TYPE.INNER_BORROW;
+        params.fund_time = params.ord_time;
 
         Orders.build(params).save().then((ret)=>{
             this.addProducts(ret, importParams, callback);
@@ -96,8 +152,13 @@ module.exports = {
         });
     },
 
-    getOrder(ord_no, callback){
+    getOrder(ord_no, type, callback){
         let sql = "select * from orders a, client b where a.ord_no=? and a.prov_id=b.cli_id";
+        if(type){
+            if(type == Format.ORDER_TYPE.INNER_BORROW){
+                sql = "select * from orders a, staff b where a.ord_no=? and a.prov_id=b.staff_id";
+            }
+        }
         db.query(sql, {
             raw: true,
             type: db.QueryTypes.SELECT,
@@ -131,6 +192,7 @@ module.exports = {
         params.time = new Date();
         let remain = order.ord_fund_remain - params.fund;
         params.remain = remain;
+        params.sign = "-";
 
         OrderFund.build(params).save().then(function(){
             let orderParam = {
@@ -139,6 +201,7 @@ module.exports = {
             if(remain == 0){
                 if(order.ord_status < Format.ORDER_STATUS.FUNDED) {
                     orderParam.ord_status = Format.ORDER_STATUS.FUNDED;
+                    orderParam.fund_time = new Date();
                 }
             }else{
                 if(order.ord_status < Format.ORDER_STATUS.FUND) {
@@ -157,7 +220,7 @@ module.exports = {
     },
 
     getPayFunds(ord_no, callback){
-        OrderFund.findAll({where : {ord_no: ord_no}}).then(function(funds){
+        OrderFund.findAll({where : {ord_no: ord_no}, order: [["time","DESC"]]}).then(function(funds){
             let ret = funds.map(function(item){
                 let data = item.dataValues;
                 data.time = moment(data.time).format("YYYY-MM-DD HH:mm:ss");
@@ -169,11 +232,15 @@ module.exports = {
         });
     },
 
+    setSendStatus(ord_no, status, time, send_tracking, callback){
+        this.setStatus(ord_no, status, time, callback, send_tracking);
+    },
+
     /**
      *
      */
-    setStatus(ord_no, status, callback){
-        //已入库的话更新库存信息
+    setStatus(ord_no, status, time, callback, tracking){
+        //已出库的话更新库存信息
         if(status == Format.ORDER_STATUS.SEND){
             let p = new Promise((resolve)=> {
                 this.getOrder(ord_no, function(order){
@@ -186,18 +253,48 @@ module.exports = {
                 });
             }).then((sta)=>{
                 StockService.removeStockByOrder(ord_no, ()=>{
-                    this.updateStatus(ord_no, status, callback);
+                    this.updateStatus(ord_no, status, time, callback, tracking);
                 });
             });
         }else {
-            this.updateStatus(ord_no, status, callback);
+            this.updateStatus(ord_no, status, time, callback);
         }
     },
 
-    updateStatus(ord_no, status, callback){
-        Orders.update({
+    updateStatus(ord_no, status, time, callback, tracking){
+        let param = {
             ord_status: status
+        };
+        if(tracking){
+            param["send_tracking"] = tracking;
+        }
+
+        if(status == Format.ORDER_STATUS.IMPORTED){
+            param.arrival_time = time;
+        }
+        if(status == Format.ORDER_STATUS.SEND){
+            param.send_time = time;
+        }
+        Orders.update(param, {where: {ord_no: ord_no}}).then(function (ret) {
+            callback(true);
+        }).catch(function (error) {
+            console.log(error);
+            callback(false);
+        });
+    },
+
+    setVoucher(ord_no, voucher, callback){
+        Orders.update({
+            voucher: voucher
         }, {where: {ord_no: ord_no}}).then(function (ret) {
+            callback(true);
+        }).catch(function (error) {
+            callback(false);
+        });
+    },
+
+    saveInvoice(ord_no, params, callback){
+        Orders.update(params, {where: {ord_no: ord_no}}).then(function (ret) {
             callback(true);
         }).catch(function (error) {
             console.log(error);

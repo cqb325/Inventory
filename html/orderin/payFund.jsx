@@ -292,7 +292,7 @@ let Page = React.createClass({
         let orderIn = this.state.orderIn;
 
         let amountFormat = function(value, column, row){
-            return value+"("+row.prod_unit+")";
+            return value+"("+Format.unitDataMap[row.prod_unit]+")";
         };
         let header = [
             {name: "prod_name", text: "名称", tip: true},

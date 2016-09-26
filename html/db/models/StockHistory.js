@@ -7,6 +7,7 @@ module.exports = function(sequelize, DataTypes){
         ord_no              : DataTypes.STRING,
         prod_id             : DataTypes.STRING,
         amount              : DataTypes.INTEGER,
+        stoamount           : DataTypes.INTEGER,
         fund                : DataTypes.FLOAT,
         time                : DataTypes.DATE,
         op                  : DataTypes.STRING

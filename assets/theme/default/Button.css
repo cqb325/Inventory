@@ -20,7 +20,6 @@ a:focus {
   border-radius: 2px;
   background: transparent;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  line-height: normal;
   -webkit-transition: background, -webkit-box-shadow 0.2s linear;
   -moz-transition: background, -moz-box-shadow 0.2s linear;
   -ms-transition: background, box-shadow 0.2s linear;
@@ -37,9 +36,11 @@ a:focus {
 }
 .cm-button i.fa.left {
   margin-right: 5px;
+  float: none;
 }
 .cm-button i.fa.right {
   margin-left: 5px;
+  float: none;
 }
 .cm-button.cm-iconButton {
   padding: 0;

@@ -67,6 +67,21 @@ module.exports = {
 
     ORDER_TYPE: {
         IN: 1,
-        OUT: 2
+        OUT: 2,
+        INNER_BACK: 3,
+        INNER_BORROW: 4,
+        CLIENT_BACK: 5,
+        CLIENT_BORROW: 6
+    },
+
+    ORDER_TYPE_IN_MAP: {
+        "1": "采购",
+        "5": "客户归还"
+    },
+
+    ORDER_TYPE_OUT_MAP: {
+        "2": "销售",
+        "4": "内部借用",
+        "6": "客户借用"
     }
 };

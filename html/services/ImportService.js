@@ -60,6 +60,15 @@ module.exports = {
         });
     },
 
+    getAllUnBackInnerOrders(callback){
+        let sql = "select * from staff a,orders b where a.staff_id=b.prov_id and b.ord_contract is null order by ord_time desc";
+        db.query(sql, {raw: true, type: db.QueryTypes.SELECT,replacements: []}).then(function(staffs){
+            callback(staffs);
+        }).catch(function(e){
+            callback(null);
+        });
+    },
+
     addOrder(params, importParams, callback){
         params.ord_no = uuid.v1();
         params.ord_status = 0;
@@ -69,6 +78,45 @@ module.exports = {
         Orders.build(params).save().then((ret)=>{
             this.addProducts(ret, importParams, callback);
         }).catch(function(error) {
+            callback(false);
+        });
+    },
+
+    back(params, importParams, callback){
+        params.ord_no = uuid.v1();
+        params.ord_contract = uuid.v1();
+        params.ord_status = Format.ORDER_STATUS.IMPORTED;
+        params.ord_fund = 0;
+        params.ord_fund_remain = 0;
+        params.fund_time = params.ord_time;
+        params.send_time = params.ord_time;
+        params.arrival_time = params.ord_time;
+        params.order_type = Format.ORDER_TYPE.INNER_BACK;
+
+        Orders.build(params).save().then((ret)=>{
+
+            let p1 = new Promise((resolve)=> {
+                this.updateBorrowContract(resolve);
+            });
+
+            let p2 = new Promise((resolve)=> {
+                this.addProducts(ret, importParams, resolve);
+            });
+
+            let p = Promise.all(p1, p2).then((ret1, ret2)=>{
+                this.setStatus(params.ord_no, Format.ORDER_STATUS.IMPORTED, params.arrival_time, callback);
+            });
+        }).catch(function(error) {
+            callback(false);
+        });
+    },
+
+    updateBorrowContract(params, callback){
+        Orders.update({
+            ord_contract: params.ord_contract
+        }, {where: {sale_contract: params.sale_contract}}).then(function(ret){
+            callback(true);
+        }).catch(function(error){
             callback(false);
         });
     },
@@ -114,7 +162,7 @@ module.exports = {
     },
 
     getProducts(ord_no, callback){
-        let sql = "select b.*,a.id, a.ord_no, a.prod_amount, a.prod_fund from order_product a, product b where a.ord_no=? and a.prod_id=b.prod_id";
+        let sql = "select b.prod_id,b.prod_name, b.prod_brand, b.prod_type, b.prod_model, b.prod_specifications, b.prod_ctime, b.prod_unit,a.id, a.ord_no, a.prod_amount, a.prod_fund, a.prod_price from order_product a, product b where a.ord_no=? and a.prod_id=b.prod_id";
         db.query(sql, {
             raw: true,
             type: db.QueryTypes.SELECT,
@@ -131,6 +179,7 @@ module.exports = {
         params.time = new Date();
         let remain = order.ord_fund_remain - params.fund;
         params.remain = remain;
+        params.sign = "+";
 
         OrderFund.build(params).save().then(function(){
             let orderParam = {
@@ -157,7 +206,7 @@ module.exports = {
     },
 
     getPayFunds(ord_no, callback){
-        OrderFund.findAll({where : {ord_no: ord_no}}).then(function(funds){
+        OrderFund.findAll({where : {ord_no: ord_no}, order: [["time","DESC"]]}).then(function(funds){
             let ret = funds.map(function(item){
                 let data = item.dataValues;
                 data.time = moment(data.time).format("YYYY-MM-DD HH:mm:ss");

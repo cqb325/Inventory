@@ -2,6 +2,9 @@
  * Created by chenqb on 2015/7/4.
  */
 module.exports = function(grunt) {
+
+
+
     grunt.initConfig({
         jshint: {
             options: {

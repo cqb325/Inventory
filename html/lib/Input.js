@@ -86,7 +86,7 @@ class Input extends BaseComponent {
         const props = {
             className: classnames(className, 'cm-form-control', getGrid(grid)),
             onChange: handleChange,
-            type: type === 'password' ? 'password' : 'text',
+            type: type === 'password' || 'hidden' ? type : 'text',
             value: this.state.value
         };
 

@@ -28,6 +28,7 @@ let Page = React.createClass({
         this.products = {};
         this.funds = {};
         this.counts = {};
+        this.prices = {};
         return {};
     },
 
@@ -40,6 +41,7 @@ let Page = React.createClass({
 
     componentDidMount() {
         this.loadAllProviders();
+        this.reloadProducts();
     },
 
     loadAllProviders() {
@@ -48,8 +50,8 @@ let Page = React.createClass({
         });
     },
 
-    reloadProducts(value, item) {
-        ProductService.getAll(value, products => {
+    reloadProducts() {
+        ProductService.getAll(products => {
             if (products) {
                 products.forEach(product => {
                     this.products[product.prod_id] = product;
@@ -92,6 +94,7 @@ let Page = React.createClass({
         this.refs.table.setData(table_Data);
 
         delete this.funds[row.prod_id];
+        delete this.prices[row.prod_id];
         delete this.counts[row.prod_id];
 
         window.setTimeout(() => {
@@ -101,7 +104,9 @@ let Page = React.createClass({
 
     updateFund(count, row) {
         let fundEle = this.funds[row.prod_id];
-        let fund = count * row.prod_price;
+        let price = this.prices[row.prod_id].getValue() || 0;
+        count = this.counts[row.prod_id].getValue() || 0;
+        let fund = count * price;
         fundEle.setValue(fund);
 
         window.setTimeout(() => {
@@ -142,7 +147,8 @@ let Page = React.createClass({
             ord_comment: formItems["ord_comment"].ref.getValue(),
             ord_fund: total,
             sale_contract: formItems["sale_contract"].ref.getValue(),
-            ord_time: formItems["ord_time"].ref.getValue()
+            ord_time: formItems["ord_time"].ref.getValue(),
+            order_type: formItems["order_type"].ref.getValue()
         };
 
         let import_table_Data = this.refs.import_table.state.data;
@@ -150,12 +156,13 @@ let Page = React.createClass({
         let prod_params = [];
         import_table_Data.forEach(item => {
             let prod_amount = this.counts[item.prod_id].getValue();
+            let prod_price = this.prices[item.prod_id].getValue();
             let prod_fund = this.funds[item.prod_id].getValue();
             prod_params.push({
                 prod_id: item.prod_id,
                 prod_amount: prod_amount,
                 prod_fund: prod_fund,
-                prod_price: item.prod_price
+                prod_price: prod_price
             });
         });
 
@@ -192,7 +199,7 @@ let Page = React.createClass({
             return React.createElement(
                 'span',
                 null,
-                React.createElement(FormControl, { ref: ref => {
+                React.createElement(FormControl, { style: { width: "80px" }, ref: ref => {
                         scope.counts[row.prod_id] = ref;
                     }, name: 'count', type: 'number', onChange: avalue => {
                         scope.updateFund(avalue, row);
@@ -205,15 +212,36 @@ let Page = React.createClass({
             return React.createElement(
                 'span',
                 null,
-                React.createElement(FormControl, { ref: ref => {
+                React.createElement(FormControl, { style: { width: "80px" }, ref: ref => {
                         scope.funds[row.prod_id] = ref;
                     }, name: 'fund', type: 'number', grid: 0.7 }),
                 '元'
             );
         };
 
+        let priceFormat = function (value, column, row) {
+            return React.createElement(
+                'span',
+                null,
+                React.createElement(FormControl, { style: { width: "80px" }, ref: ref => {
+                        scope.prices[row.prod_id] = ref;
+                    }, name: 'price', onChange: avalue => {
+                        scope.updateFund(avalue, row);
+                    }, rules: { required: true }, type: 'number', grid: 0.7 }),
+                '元'
+            );
+        };
+
         let header = [{ name: "prod_name", text: "名称", tip: true }, { name: "prod_price", text: "单价" }, { name: "prod_model", text: "型号" }, { name: "op", text: "操作", format: btnFormat }];
-        let header2 = [{ name: "prod_name", text: "名称", tip: true }, { name: "prod_price", text: "单价" }, { name: "prod_model", text: "型号" }, { name: "prod_num", text: "数量", format: countFormat }, { name: "prod_fund", text: "总价", format: fundFormat }, { name: "op", text: "操作", format: btnFormat2 }];
+        let header2 = [{ name: "prod_name", text: "名称", tip: true }, { name: "prod_price", text: "单价", format: priceFormat }, { name: "prod_model", text: "型号" }, { name: "prod_num", text: "数量", format: countFormat }, { name: "prod_fund", text: "总价", format: fundFormat }, { name: "op", text: "操作", format: btnFormat2 }];
+
+        let orderTypes = [];
+        for (let i in Format.ORDER_TYPE_IN_MAP) {
+            orderTypes.push({
+                id: i,
+                text: Format.ORDER_TYPE_IN_MAP[i]
+            });
+        }
         return React.createElement(
             'div',
             { className: 'main-container' },
@@ -323,6 +351,12 @@ let Page = React.createClass({
                     React.createElement(FormControl, { label: React.createElement(
                             'span',
                             null,
+                            React.createElement('img', { src: IMGPATH + "icon-gys.png" }),
+                            ' 类型: '
+                        ), ref: 'order_type', type: 'select', data: orderTypes, name: 'order_type', grid: 1, required: true }),
+                    React.createElement(FormControl, { label: React.createElement(
+                            'span',
+                            null,
                             React.createElement('img', { src: IMGPATH + "contract.png" }),
                             ' 采购合同号: '
                         ), type: 'text', name: 'ord_contract', grid: 1, required: true }),
@@ -343,7 +377,7 @@ let Page = React.createClass({
                             null,
                             React.createElement('img', { src: IMGPATH + "icon-gys.png" }),
                             ' 供应商: '
-                        ), onChange: this.reloadProducts, ref: 'provider', type: 'autocomplete', data: [], name: 'prov_id', grid: 1, required: true }),
+                        ), ref: 'provider', type: 'autocomplete', data: [], name: 'prov_id', grid: 1, required: true }),
                     React.createElement(FormControl, { label: React.createElement(
                             'span',
                             null,
@@ -357,7 +391,7 @@ let Page = React.createClass({
                 { grid: 0.45, style: { "verticalAlign": "top" } },
                 React.createElement(
                     Tile,
-                    { header: '选择产品' },
+                    { header: '选择产品', contentStyle: { "maxHeight": "500px", "overflow": "auto" } },
                     React.createElement(Table, { ref: 'table', header: header, data: [], striped: true, className: 'text-center' })
                 )
             ),
@@ -366,7 +400,7 @@ let Page = React.createClass({
                 { grid: { width: 0.54, offset: 0.01 } },
                 React.createElement(
                     Tile,
-                    { header: '入库产品' },
+                    { header: '入库产品', contentStyle: { "maxHeight": "500px", "overflow": "auto" } },
                     React.createElement(Table, { ref: 'import_table', header: header2, data: [], striped: true, className: 'text-center' })
                 ),
                 React.createElement(

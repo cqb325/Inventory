@@ -13,6 +13,7 @@ const Pagination = require('../lib/Pagination');
 const Input = require('../lib/Input');
 const FormControl = require('../lib/FormControl');
 const MessageBox = require('../lib/MessageBox');
+const reader = require('excel-data');
 
 const ProductService = require("../services/ProductService");
 
@@ -28,8 +29,7 @@ let List = React.createClass({
         let params = Object.assign({},{
             pageNum: pageNum,
             pageSize: pageSize,
-            prod_name: this.refs.prod_name.getValue(),
-            prov_id: this.props.params.id
+            prod_name: this.refs.prod_name.getValue()
         });
 
         ProductService.getPageList(params, (ret)=>{
@@ -80,6 +80,29 @@ let List = React.createClass({
         this.reloadTableData();
     },
 
+    choiceFile(value, file){
+        let path = file.files[0].path;
+        reader.read(path).then((data)=>{
+            for(let sheetName in data){
+                let sheetData = data[sheetName];
+                this.saveProducts(sheetData);
+            }
+        });
+    },
+
+    saveProducts(sheetData){
+        let data = sheetData.data;
+        //StaffService.importData(data, (ret)=>{
+        //    if(ret){
+        //        this.refs.tip.show("导入成功");
+        //        this.refs.tip.setData(true);
+        //    }else{
+        //        this.refs.tip.show("导入失败");
+        //        this.refs.tip.setData(false);
+        //    }
+        //});
+    },
+
     render(){
         let scope = this;
         let btnFormat = function(value, column, row){
@@ -104,12 +127,12 @@ let List = React.createClass({
                 <Label className="searchTools mt-30 mb-20" component="div">
                     <Label className="" grid={0.3}>
                         <Button icon="plus" theme="success" href={"#product_add/"+this.props.params.id }>新增产品</Button>
+                        <Upload onChange={this.choiceFile} placeHolder="选择excel文件批量导入" className="ml-10" style={{top: "11px"}} />
                     </Label>
 
                     <Label className="text-right" grid={0.7}>
                         <FormControl ref="prod_name" label="产品名称: " type="text"></FormControl>
                         <Button icon="search" theme="success" raised={true} className="ml-10" onClick={this.search}>查 询</Button>
-                        <Button className="ml-20" icon="mail-reply" theme="info" raised={true} href="javascript:history.go(-1)">返 回</Button>
                     </Label>
                 </Label>
 

@@ -7,13 +7,19 @@ module.exports = {
                 let listener = ()=>{
                     let target = ref.props["data-target"];
                     let targetRef = this.refs[target];
-                    if(targetRef.open){
+                    if(targetRef && targetRef.open){
                         targetRef.open();
+                        if(ref.props["data-data"]){
+                            targetRef.setData(ref.props["data-data"]);
+                        }
                         return ;
                     }
                 };
-                ref.un("click", listener);
-                ref.on("click", listener);
+                if(!ref.__islistened) {
+                    ref.__islistened = true;
+                    //ref.un("click", listener);
+                    ref.on("click", listener);
+                }
             }
         }
     }

@@ -18,7 +18,7 @@ module.exports = {
         };
 
         condition.where = {
-            prov_id: params.prov_id
+
         };
         if (params.prod_name) {
             condition.where.prod_name = {
@@ -37,8 +37,8 @@ module.exports = {
         });
     },
 
-    getAll(prov_id, callback){
-        Product.findAll({where: {prov_id: prov_id}}).then(function(products){
+    getAll(callback){
+        Product.findAll().then(function(products){
             let ret = products.map(function(product){
                 return product.dataValues;
             });

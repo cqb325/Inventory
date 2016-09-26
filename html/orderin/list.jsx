@@ -138,7 +138,7 @@ let List = React.createClass({
             let payBtn = <Button key="2" theme="success" className="ml-10" icon="cc-visa" flat={true} href={"#import_payFund/"+row.ord_no}>付款</Button>;
             let sendBtn = <Button key="3" theme="success" className="ml-10" icon="truck" flat={true} onClick={scope.sendConfirm.bind(scope, row.ord_no)}>已发货</Button>;
             let importBtn = <Button key="4" theme="success" className="ml-10" icon="archive" flat={true} onClick={scope.importConfirm.bind(scope, row.ord_no)}>已入库</Button>;
-            let detailBtn = <Button key="2" theme="success" className="ml-10" icon="bars" flat={true} href={"#import_payFund/"+row.ord_no}>查看</Button>;
+            let detailBtn = <Button key="5" theme="success" className="ml-10" icon="bars" flat={true} href={"#import_payFund/"+row.ord_no}>查看</Button>;
             if(row.ord_status < Format.ORDER_STATUS.FUND){
                 btns.push(deleteBtn);
                 btns.push(payBtn);
@@ -219,7 +219,7 @@ let List = React.createClass({
                 <MessageBox title="提示" type="confirm" ref="importTip" confirm={this.importResult}/>
                 <Label className="searchTools mt-30 mb-20" component="div">
                     <Label className="" grid={0.3}>
-                        <Button icon="plus" theme="success" href="#import_add">新增入库</Button>
+                        <Button icon="plus" theme="success" href="#import_add">新采购</Button>
                     </Label>
 
                     <Label className="text-right" grid={0.7}>

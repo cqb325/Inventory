@@ -98,11 +98,6 @@ let List = React.createClass({
                     Button,
                     { theme: 'success', className: 'ml-10', icon: 'trash', flat: true, onClick: scope.showConfirm.bind(scope, row.prov_id) },
                     '删除'
-                ),
-                React.createElement(
-                    Button,
-                    { theme: 'success', className: 'ml-10', icon: 'list', flat: true, href: "#product_list/" + row.prov_id },
-                    '产品'
                 )
             );
         };

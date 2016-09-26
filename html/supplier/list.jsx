@@ -87,7 +87,6 @@ let List = React.createClass({
             return (<span>
                 <Button theme="success" className="ml-10" icon="edit" flat={true} href={"#provider_edit/"+row.prov_id}>编辑</Button>
                 <Button theme="success" className="ml-10" icon="trash" flat={true} onClick={scope.showConfirm.bind(scope, row.prov_id)}>删除</Button>
-                <Button theme="success" className="ml-10" icon="list" flat={true} href={"#product_list/"+row.prov_id}>产品</Button>
             </span>);
         };
         let header = [

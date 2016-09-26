@@ -84,14 +84,18 @@ class Form extends BaseComponent {
      */
     renderChildren(){
         return React.Children.map(this.props.children, (child)=>{
-            let componentName = child.type.name || child.type.toString().match(/function\s*([^(]*)\(/)[1];
-            if(componentName === 'FormControl'){
-                let props = Object.assign({
-                    itemBind: this.itemBind.bind(this)
-                },child.props);
-                props.layout = this.props.layout ? this.props.layout : props.layout;
-                return React.cloneElement(child, props);
-            }else {
+            if(child) {
+                let componentName = child.type.name || child.type.toString().match(/function\s*([^(]*)\(/)[1];
+                if (componentName === 'FormControl') {
+                    let props = Object.assign({
+                        itemBind: this.itemBind.bind(this)
+                    }, child.props);
+                    props.layout = this.props.layout ? this.props.layout : props.layout;
+                    return React.cloneElement(child, props);
+                } else {
+                    return child;
+                }
+            }else{
                 return child;
             }
         });

@@ -9,8 +9,10 @@ const Label = require('../lib/Label');
 const Button = require('../lib/Button');
 const Tile = require('../Tile');
 const Table = require('../lib/Table');
+const Dialog = require('../lib/Dialog');
 const Pagination = require('../lib/Pagination');
 const Input = require('../lib/Input');
+const DateTime = require('../lib/DateTime');
 const Select = require('../lib/Select');
 const DateRange = require('../lib/DateRange');
 const moment = require('../lib/moment');
@@ -92,26 +94,34 @@ let List = React.createClass({
     },
 
     sendConfirm(ord_no) {
-        this.refs.sendTip.show("确认已经发货?");
+        this.refs.sendTip.open();
         this.refs.sendTip.setData(ord_no);
     },
 
     importConfirm(ord_no) {
-        this.refs.importTip.show("确认对方已经收货?");
+        this.refs.importTip.open();
         this.refs.importTip.setData(ord_no);
     },
 
     sendResult(flag) {
         let ord_no = this.refs.sendTip.getData();
         if (flag) {
-            ExportService.setStatus(ord_no, Format.ORDER_STATUS.SEND, ret => {
-                if (ret) {
-                    window.location.reload();
-                } else {
-                    this.refs.tip.show("提交失败");
-                    this.refs.tip.setData(false);
-                }
-            });
+            let isValida = this.refs.send_time.check();
+            let isValidb = this.refs.send_tracking.check();
+            if (isValida && isValidb) {
+                let sendTime = this.refs.send_time.getValue();
+                let send_tracking = this.refs.send_tracking.getValue();
+                ExportService.setSendStatus(ord_no, Format.ORDER_STATUS.SEND, sendTime, send_tracking, ret => {
+                    if (ret) {
+                        this.search();
+                    } else {
+                        this.refs.tip.show("提交失败");
+                        this.refs.tip.setData(false);
+                    }
+                });
+            } else {
+                return false;
+            }
         }
         return true;
     },
@@ -119,14 +129,20 @@ let List = React.createClass({
     importResult(flag) {
         let ord_no = this.refs.importTip.getData();
         if (flag) {
-            ExportService.setStatus(ord_no, Format.ORDER_STATUS.IMPORTED, ret => {
-                if (ret) {
-                    window.location.reload();
-                } else {
-                    this.refs.tip.show("提交失败");
-                    this.refs.tip.setData(false);
-                }
-            });
+            let isValid = this.refs.arrival_time.check();
+            if (isValid) {
+                let arrivalTime = this.refs.arrival_time.getValue();
+                ExportService.setStatus(ord_no, Format.ORDER_STATUS.IMPORTED, arrivalTime, ret => {
+                    if (ret) {
+                        this.search();
+                    } else {
+                        this.refs.tip.show("提交失败");
+                        this.refs.tip.setData(false);
+                    }
+                });
+            } else {
+                return false;
+            }
         }
         return true;
     },
@@ -156,6 +172,11 @@ let List = React.createClass({
                 { key: '4', theme: 'success', className: 'ml-10', icon: 'cc-visa', flat: true, onClick: scope.importConfirm.bind(scope, row.ord_no) },
                 '已收货'
             );
+            let detailBtn = React.createElement(
+                Button,
+                { key: '5', theme: 'success', className: 'ml-10', icon: 'bars', flat: true, href: "#export_payFund/" + row.ord_no },
+                '查看'
+            );
             if (row.ord_status < Format.ORDER_STATUS.FUND) {
                 btns.push(deleteBtn);
                 btns.push(payBtn);
@@ -164,10 +185,15 @@ let List = React.createClass({
                 btns.push(sendBtn);
             } else if (row.ord_status == Format.ORDER_STATUS.FUND_SEND) {
                 btns.push(payBtn);
+                btns.push(detailBtn);
             } else if (row.ord_status == Format.ORDER_STATUS.FUNDED) {
                 btns.push(sendBtn);
+                btns.push(detailBtn);
             } else if (row.ord_status == Format.ORDER_STATUS.SEND) {
                 btns.push(importBtn);
+                btns.push(detailBtn);
+            } else if (row.ord_status == Format.ORDER_STATUS.IMPORTED) {
+                btns.push(detailBtn);
             }
             return React.createElement(
                 'span',
@@ -198,14 +224,39 @@ let List = React.createClass({
             { className: 'main-container' },
             React.createElement(MessageBox, { title: '提示', ref: 'confirm', type: 'confirm', confirm: this.confirmDelete }),
             React.createElement(MessageBox, { title: '提示', ref: 'tip', confirm: this.confirmDRefresh }),
-            React.createElement(MessageBox, { title: '提示', type: 'confirm', ref: 'sendTip', confirm: this.sendResult }),
-            React.createElement(MessageBox, { title: '提示', type: 'confirm', ref: 'importTip', confirm: this.importResult }),
+            React.createElement(
+                Dialog,
+                { title: '已发货', ref: 'sendTip', grid: 0.3, onConfirm: this.sendResult },
+                React.createElement(
+                    'div',
+                    { className: 'mt-20' },
+                    React.createElement(
+                        FormControl,
+                        { label: '发货时间: ', className: 'flex vertical-center', ref: 'send_time', name: 'sendTime', required: true },
+                        React.createElement(DateTime, { dateOnly: true, className: 'auto' })
+                    ),
+                    React.createElement(
+                        FormControl,
+                        { label: '发货单号: ', className: 'flex', ref: 'send_tracking', name: 'send_tracking', required: true },
+                        React.createElement(Input, { className: 'auto' })
+                    )
+                )
+            ),
+            React.createElement(
+                Dialog,
+                { title: '已收货', ref: 'importTip', grid: 0.3, onConfirm: this.importResult },
+                React.createElement(
+                    'div',
+                    { className: 'mt-20' },
+                    React.createElement(FormControl, { label: '收货时间: ', ref: 'arrival_time', type: 'datetime', dateOnly: true, required: true })
+                )
+            ),
             React.createElement(
                 Label,
                 { className: 'searchTools mt-30 mb-20', component: 'div' },
                 React.createElement(
                     Label,
-                    { className: '', grid: 0.15 },
+                    { className: '', grid: 0.3 },
                     React.createElement(
                         Button,
                         { icon: 'plus', theme: 'success', href: '#export_add' },
@@ -214,7 +265,7 @@ let List = React.createClass({
                 ),
                 React.createElement(
                     Label,
-                    { className: 'text-right', grid: 0.85 },
+                    { className: 'text-right', grid: 0.7 },
                     React.createElement(FormControl, { ref: 'dateRange', label: '时间: ', type: 'daterange', endDate: moment() }),
                     React.createElement(FormControl, { ref: 'ord_contract', label: '合同号: ', type: 'text' }),
                     React.createElement(FormControl, { ref: 'ord_status', label: '状态: ', type: 'select', data: statusData, className: 'text-left',

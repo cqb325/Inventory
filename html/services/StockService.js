@@ -85,11 +85,19 @@ module.exports = {
      */
     _buildHistories(history, ord_no, products, type){
         products.forEach((item)=>{
+            let amount = item.amount || 0;
+            let stoamount;
+            if(type == "入库") {
+                stoamount = amount + item.prod_amount;
+            }else{
+                stoamount = amount - item.prod_amount;
+            }
             history.push({
                 stoh_id: uuid.v1(),
                 ord_no: ord_no,
                 prod_id: item.prod_id,
                 amount: item.prod_amount,
+                stoamount: stoamount,
                 fund: item.prod_fund,
                 time: new Date(),
                 op: type

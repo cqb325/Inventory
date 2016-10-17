@@ -116,7 +116,6 @@ class AutoComplete extends BaseComponent {
     }
 
     filter(value){
-        console.log(this.data);
         if(!this.data){
             return;
         }
@@ -128,7 +127,6 @@ class AutoComplete extends BaseComponent {
             return false;
         });
 
-        console.log(filtered);
         this.setState({data: filtered});
 
         this.showOptions();

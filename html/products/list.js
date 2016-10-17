@@ -11,6 +11,7 @@ const Tile = require('../Tile');
 const Table = require('../lib/Table');
 const Pagination = require('../lib/Pagination');
 const Input = require('../lib/Input');
+const Upload = require('../lib/Upload');
 const FormControl = require('../lib/FormControl');
 const MessageBox = require('../lib/MessageBox');
 const reader = require('excel-data');
@@ -94,15 +95,15 @@ let List = React.createClass({
 
     saveProducts(sheetData) {
         let data = sheetData.data;
-        //StaffService.importData(data, (ret)=>{
-        //    if(ret){
-        //        this.refs.tip.show("导入成功");
-        //        this.refs.tip.setData(true);
-        //    }else{
-        //        this.refs.tip.show("导入失败");
-        //        this.refs.tip.setData(false);
-        //    }
-        //});
+        ProductService.importData(data, ret => {
+            if (ret) {
+                this.refs.tip.show("导入成功");
+                this.refs.tip.setData(true);
+            } else {
+                this.refs.tip.show("导入失败");
+                this.refs.tip.setData(false);
+            }
+        });
     },
 
     render() {

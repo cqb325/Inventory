@@ -3,9 +3,10 @@
  */
 
 const uuid = require("uuid");
+const Format = require("../format");
 module.exports = {
     /**
-     * ��ҳ�б�
+     * 分页列表
      */
     getPageList(params, callback){
         let pageNum = params.pageNum || 1;
@@ -49,7 +50,7 @@ module.exports = {
     },
 
     /**
-     * ɾ����Ʒ
+     * 删除产品
      */
     deleteById(prod_id, callback){
         Product.destroy({where : {prod_id: prod_id}}).then(function(ret){
@@ -86,7 +87,7 @@ module.exports = {
     },
 
     /**
-     * ��ȡ���п���еĲ�Ʒ
+     * 获取所有库存中的产品
      */
     getAllStoredProducts(callback){
         let sql = "select a.*, b.amount from product a, stock b where a.prod_id=b.prod_id and b.amount > 0";
@@ -97,6 +98,36 @@ module.exports = {
             callback(ret);
         }).catch(function(){
             callback(null);
+        });
+    },
+
+    importData(data, callback){
+        let params = data.map(function(item, index){
+            let pUnit = null;
+            for(let unit in Format.unitDataMap){
+                if(Format.unitDataMap[unit] == item["单位"]){
+                    pUnit = unit;
+                    break;
+                }
+            }
+
+            return {
+                prod_id: uuid.v1(),
+                prod_name: item["名称"],
+                prod_price: item["单价"],
+                prod_brand: item["品牌"],
+                prod_type: item["类型"],
+                prod_model: item["型号"],
+                prod_specifications: item["规格"],
+                prod_ctime: new Date(),
+                prod_unit: pUnit
+            };
+        });
+
+        Product.bulkCreate(params).then(function(){
+            callback(true);
+        }).catch(function(){
+            callback(false);
         });
     }
 };
